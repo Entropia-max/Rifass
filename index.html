@@ -447,6 +447,17 @@
                     </div>
                 </div>
 
+                <!-- GESTOR DE RESEÑAS (PANEL ADMIN) -->
+                <div class="border-t border-[#333] pt-3">
+                    <h4 class="font-black text-slate-300 mb-2 flex justify-between text-xs uppercase tracking-widest">
+                        <span>Gestionar Reseñas:</span>
+                        <span id="admin-reviews-count" class="neon-text-magenta">0</span>
+                    </h4>
+                    <div id="admin-reviews-list" class="max-h-32 overflow-y-auto space-y-2 border border-[#333] p-2 rounded-sm bg-black">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+
                 <!-- Gestor de Boletos Vendidos / Apartados -->
                 <div class="border-t border-[#333] pt-3">
                     <h4 class="font-black text-slate-300 mb-2 flex justify-between text-xs uppercase tracking-widest">
@@ -502,9 +513,9 @@
         let lastHandledSpinId = null;
         let lastHandledAudioId = null;
         let deliveryEvidences = [];
-        let userReviews = []; // Vacío por defecto, solo reseñas reales de la gente
+        let userReviews = []; // Vacío por defecto
 
-        // Función auxiliar para convertir formato 24h (ej: 21:00) a 12h (ej: 09:00 pm)
+        // Función auxiliar para formato 12 horas (ej: 09:00 pm)
         function format12Hour(time24) {
             if (!time24) return "09:00 pm";
             let parts = time24.split(':');
@@ -512,7 +523,7 @@
             let minutes = parts[1] || '00';
             let ampm = hours >= 12 ? 'pm' : 'am';
             hours = hours % 12;
-            hours = hours ? hours : 12; // la hora '0' debe ser '12'
+            hours = hours ? hours : 12;
             let formattedHours = hours < 10 ? '0' + hours : hours;
             return `${formattedHours}:${minutes} ${ampm}`;
         }
@@ -626,7 +637,6 @@
                     if (data.evidences) deliveryEvidences = data.evidences;
                     if (data.reviews) userReviews = data.reviews;
 
-                    // Manejar audio en vivo (solo suena en dispositivos de clientes, el admin no lo reproduce automáticamente)
                     const isAdminPanelOpen = !document.getElementById('admin-modal').classList.contains('hidden');
                     
                     if (data.liveAudio && data.audioId && data.audioId !== lastHandledAudioId) {
@@ -635,14 +645,12 @@
                         player.src = data.liveAudio;
                         
                         if (!isAdminPanelOpen) {
-                            // Si es un cliente normal, muestra el banner para escuchar
                             document.getElementById('live-audio-banner').classList.remove('hidden');
                         }
                     } else if (!data.liveAudio) {
                         document.getElementById('live-audio-banner').classList.add('hidden');
                     }
 
-                    // Calcular personas en línea
                     if (data.presence) {
                         const now = Date.now();
                         let activeCount = 0;
@@ -653,7 +661,6 @@
                         if (adminOnlineCountElem) adminOnlineCountElem.innerText = Math.max(1, activeCount);
                     }
 
-                    // Actualizar UI general
                     document.getElementById('admin-price-input').value = ticketPrice;
                     document.getElementById('admin-time-input').value = drawTime;
                     document.getElementById('display-ticket-price').innerText = `$${ticketPrice} MXN`;
@@ -661,8 +668,8 @@
                     renderTickets();
                     renderEvidences();
                     renderReviews();
+                    renderAdminReviewsList();
 
-                    // Detectar orden de giro sincronizado
                     if (data.gameState === "spinning" && data.spinId && data.spinId !== lastHandledSpinId) {
                         lastHandledSpinId = data.spinId;
                         localGameState = "spinning";
@@ -735,6 +742,44 @@
                     </div>
                 `;
             });
+        }
+
+        function renderAdminReviewsList() {
+            const listContainer = document.getElementById('admin-reviews-list');
+            const countBadge = document.getElementById('admin-reviews-count');
+            if(!listContainer) return;
+            listContainer.innerHTML = '';
+
+            countBadge.innerText = userReviews.length;
+
+            if(userReviews.length === 0) {
+                listContainer.innerHTML = `<p class="text-slate-600 text-center py-2 font-bold text-[10px] uppercase tracking-widest">Sin reseñas publicadas</p>`;
+                return;
+            }
+
+            userReviews.forEach((rev, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between bg-[#111] p-2 rounded-sm border border-[#333] text-xs shadow-sm';
+                div.innerHTML = `
+                    <div class="overflow-hidden pr-2">
+                        <span class="font-black text-[#00f3ff]">${rev.author}</span>
+                        <p class="text-slate-400 text-[10px] truncate">"${rev.text}"</p>
+                    </div>
+                    <button onclick="deleteReview(${index})" class="bg-red-900/20 hover:bg-red-900/40 border border-red-900 text-red-500 px-2 py-1 rounded-sm font-black uppercase text-[9px] transition-all whitespace-nowrap">
+                        Eliminar
+                    </button>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
+        window.deleteReview = async function(index) {
+            if(confirm(`¿Estás seguro de eliminar la reseña de "${userReviews[index].author}"?`)) {
+                userReviews.splice(index, 1);
+                await saveDataToCloud();
+                renderReviews();
+                renderAdminReviewsList();
+            }
         }
 
         // --- SUBIR EVIDENCIA DESDE ADMIN ---
@@ -925,6 +970,7 @@
                 document.getElementById('admin-login-view').classList.add('hidden');
                 document.getElementById('admin-dashboard-view').classList.remove('hidden');
                 renderAdminApartadosList();
+                renderAdminReviewsList();
                 drawAdminWheel(0, Array.from({length: 100}, (_, i) => i));
             } else {
                 alert('ACCESO DENEGADO');
@@ -1163,7 +1209,6 @@
             const count = activeParticipants.length;
             const sliceAngle = (2 * Math.PI) / count;
             
-            // CÁLCULO DE ÁNGULO PERFECTAMENTE ALINEADO CON EL PUNTERO SUPERIOR (12:00 hrs)
             const targetSliceCenter = winningIndex * sliceAngle + sliceAngle / 2;
             const pointerAngle = 3 * Math.PI / 2; 
             const desiredNormalizedAngle = (pointerAngle - targetSliceCenter + Math.PI * 2) % (Math.PI * 2);
@@ -1211,12 +1256,10 @@
             const winningNumStr = String(winningTicketNum).padStart(2, '0');
             const clientInfo = clientDataStore[winningTicketNum] || { name: 'Usuario Desconocido' };
 
-            // Cliente
             document.getElementById('winner-number').innerText = winningNumStr;
             document.getElementById('winner-name-display').innerText = clientInfo.name;
             document.getElementById('winner-announcement').classList.remove('hidden');
 
-            // Admin Panel
             const adminNum = document.getElementById('admin-winner-num');
             const adminName = document.getElementById('admin-winner-name');
             const adminAnnounce = document.getElementById('admin-winner-announcement');
@@ -1229,7 +1272,6 @@
             confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#ff00ff', '#00f3ff', '#39ff14', '#ffffff'] });
         }
 
-        // Inicialización general
         initRealtimeListener();
         setupPresence();
         drawWheel(0, Array.from({length: 100}, (_, i) => i));
