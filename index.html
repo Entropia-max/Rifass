@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sorteos JISTHAN - Sorteos de Efectivo</title>
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.mm/"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,7 +16,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .ticket-btn { transition: all 0.2s ease; }
-        .ticket-btn:hover:not(:disabled) { transform: translateY(-2px); shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .ticket-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         @keyframes pulse-glow {
             0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
             50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.8); }
@@ -410,8 +410,8 @@
         }
 
         function payWithCard() {
+            completePurchaseSimulation();
             window.location.href = 'https://mpago.la/1AbhKAz';
-    
         }
 
         function payWithCash() {
