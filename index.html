@@ -399,13 +399,16 @@
                     <span id="admin-online-users" class="neon-text-cyan neon-font text-lg font-black">1</span>
                 </div>
 
-                <!-- TRANSMISIÓN DE AUDIO (WALKIE-TALKIE) -->
-                <div class="bg-black/90 border border-[#39ff14] rounded-lg p-3 text-center shadow-[0_0_15px_rgba(57,255,20,0.2)]">
-                    <h4 class="text-xs font-black text-[#39ff14] mb-2 uppercase tracking-widest"><i class="fa-solid fa-microphone"></i> Transmisión de Audio en Vivo</h4>
+                <!-- TRANSMISIÓN DE AUDIO (WALKIE-TALKIE) CON BOTÓN DE BORRAR -->
+                <div class="bg-black/90 border border-[#39ff14] rounded-lg p-3 text-center shadow-[0_0_15px_rgba(57,255,20,0.2)] space-y-2">
+                    <h4 class="text-xs font-black text-[#39ff14] mb-1 uppercase tracking-widest"><i class="fa-solid fa-microphone"></i> Transmisión de Audio en Vivo</h4>
                     <button id="record-audio-btn" onclick="toggleRecordAudio()" class="w-full bg-[#39ff14]/20 hover:bg-[#39ff14]/30 border border-[#39ff14] text-[#39ff14] py-2.5 rounded font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all">
                         <i id="record-icon" class="fa-solid fa-circle-dot text-red-500"></i> <span id="record-btn-text">Presionar para Hablar</span>
                     </button>
-                    <span id="recording-status" class="text-[10px] text-slate-400 mt-1 block">Toca para grabar y soltar para enviar a los clientes.</span>
+                    <button onclick="deleteLiveAudio()" class="w-full bg-red-900/20 hover:bg-red-900/40 border border-red-900 text-red-500 py-1.5 rounded font-black text-[10px] uppercase tracking-widest transition-all">
+                        <i class="fa-solid fa-trash mr-1"></i> Borrar Audio Actual
+                    </button>
+                    <span id="recording-status" class="text-[10px] text-slate-400 block">Toca para grabar y soltar para enviar a los clientes.</span>
                 </div>
                 
                 <!-- VISTA DE LA RULETA EN EL PANEL DE ADMINISTRADOR -->
@@ -504,7 +507,7 @@
             { author: "Alejandra R.", text: "Al principio dudaba, pero la ruleta en vivo transparente da mucha confianza. ¡Muchas gracias JISTHAN!", rating: 5, ticket: "#77" }
         ];
 
-        // --- GRABACIÓN DE AUDIO WALKIE-TALKIE ---
+        // --- GRABACIÓN Y BORRADO DE AUDIO WALKIE-TALKIE ---
         let mediaRecorder;
         let audioChunks = [];
         let isRecording = false;
@@ -559,6 +562,19 @@
             }
         };
 
+        window.deleteLiveAudio = async function() {
+            try {
+                await updateDoc(doc(db, "rifas", "Principal"), {
+                    liveAudio: null,
+                    audioId: null
+                });
+                document.getElementById('live-audio-banner').classList.add('hidden');
+                document.getElementById('recording-status').innerText = "Audio borrado de la nube.";
+            } catch(e) {
+                alert("Error al borrar el audio.");
+            }
+        };
+
         window.playAdminVoice = function() {
             const player = document.getElementById('client-audio-player');
             player.play().catch(e => console.log("Interacción requerida para audio"));
@@ -600,15 +616,20 @@
                     if (data.evidences) deliveryEvidences = data.evidences;
                     if (data.reviews) userReviews = data.reviews;
 
-                    // Escuchar nuevo audio en vivo del Admin
+                    // Manejar audio en vivo (solo suena en dispositivos de clientes, el admin no lo reproduce automáticamente)
+                    const isAdminPanelOpen = !document.getElementById('admin-modal').classList.contains('hidden');
+                    
                     if (data.liveAudio && data.audioId && data.audioId !== lastHandledAudioId) {
                         lastHandledAudioId = data.audioId;
                         const player = document.getElementById('client-audio-player');
                         player.src = data.liveAudio;
-                        document.getElementById('live-audio-banner').classList.remove('hidden');
-                        player.play().catch(e => {
-                            // Si el navegador bloquea el autoplay automático, el usuario tiene el botón "Escuchar" visible
-                        });
+                        
+                        if (!isAdminPanelOpen) {
+                            // Si es un cliente normal, muestra el banner para escuchar
+                            document.getElementById('live-audio-banner').classList.remove('hidden');
+                        }
+                    } else if (!data.liveAudio) {
+                        document.getElementById('live-audio-banner').classList.add('hidden');
                     }
 
                     // Calcular personas en línea
