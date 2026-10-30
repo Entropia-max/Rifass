@@ -16,7 +16,7 @@
     <style>
         body { 
             font-family: 'Montserrat', sans-serif; 
-            background-color: #05103a; /* Fondo azul noche profundo */
+            background-color: #05103a; 
             background-image: radial-gradient(circle at top, #112d8a 0%, #05103a 60%);
             color: #333;
         }
@@ -26,7 +26,7 @@
         
         /* Título Principal 3D */
         .title-rifas {
-            color: #ffde00; /* Amarillo */
+            color: #ffde00; 
             -webkit-text-stroke: 1.5px #4a0000;
             text-shadow: 
                 0px 5px 0px #041144, 
@@ -90,13 +90,13 @@
                 <div class="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div> EN VIVO
             </div>
             
-            <!-- Caja Acumulado (Azul Oscuro + Borde Neon) -->
+            <!-- Caja Acumulado -->
             <div class="neon-box bg-[#0a1647] py-3 px-4 rounded-[2rem] flex items-center justify-center gap-3 relative z-10">
                 <span class="text-white text-xs md:text-sm font-bold tracking-widest pt-1">ACUMULADO ACTUAL:</span>
                 <span id="top-accumulator" class="text-3xl md:text-5xl font-normal circus-font text-[#ffde00] drop-shadow-[0_0_8px_rgba(255,222,0,0.8)]">$0 MXN</span>
             </div>
             
-            <!-- Botón Admin (Centrado abajo del acumulado) -->
+            <!-- Botón Admin -->
             <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-3">
                 <i class="fa-solid fa-star text-yellow-400 text-sm drop-shadow-md"></i>
                 <button onclick="openAdminModal()" class="bg-[#d92228] hover:bg-red-800 text-white font-bold text-sm px-6 py-1.5 rounded-full border-2 border-[#ffde00] shadow-[0_4px_0_#7a0b10] flex items-center gap-2 transition active:translate-y-1 active:shadow-none">
@@ -131,8 +131,6 @@
                     </div>
                 </h2>
                 
-                <!-- TEXTO ELIMINADO POR PETICIÓN -->
-
                 <!-- Detalles: Costo y Horario -->
                 <div class="flex gap-2 w-full mb-6">
                     <div class="flex-1 bg-[#fff8d6] border-2 border-[#fde047] rounded-[1rem] p-2.5 flex items-center justify-center gap-2 shadow-sm">
@@ -219,21 +217,20 @@
 
     </main>
 
-    <!-- FOOTER FLOTANTE (CARRITO) - COLOR SÓLIDO, BOTÓN INMENSO -->
+    <!-- FOOTER FLOTANTE (CARRITO) -->
     <div id="floating-cart" class="fixed bottom-0 left-0 right-0 bg-[#05103a] border-t-[4px] border-[#ffde00] px-4 py-3 shadow-[0_-10px_20px_rgba(0,0,0,0.8)] transform translate-y-full transition-transform duration-300 z-50">
         <div class="max-w-md mx-auto flex items-center justify-between gap-3">
             <div class="text-white text-xs font-black leading-tight">
                 Boletos: <span id="selected-count" class="text-[#ffde00] text-base">0</span><br>
                 Total: <span id="selected-total" class="text-[#ffde00] text-lg">$0</span>
             </div>
-            <!-- BOTÓN GIGANTE Y SÓLIDO PARA APARTAR -->
             <button onclick="openCustomerModal()" class="flex-1 bg-[#16a34a] text-white font-normal circus-font text-xl md:text-2xl py-3 rounded-xl border-b-4 border-[#14532d] shadow-lg flex items-center justify-center gap-2 active:border-b-0 active:translate-y-1">
                 <i class="fa-solid fa-ticket"></i> APARTAR
             </button>
         </div>
     </div>
 
-    <!-- MODAL 1: DATOS DEL CLIENTE (FONDO OSCURO SÓLIDO) -->
+    <!-- MODAL 1: DATOS DEL CLIENTE -->
     <div id="customer-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[60] p-4">
         <div class="bg-[#fcf5e3] rounded-2xl max-w-sm w-full p-6 shadow-2xl border-[4px] border-[#ffde00]">
             <h3 class="text-2xl font-normal circus-font text-[#d92228] mb-1">Tus Datos</h3>
@@ -246,464 +243,4 @@
                 </div>
                 <div>
                     <label class="block text-[10px] font-black text-slate-800 mb-1 uppercase tracking-wide">Número de WhatsApp</label>
-                    <input type="tel" id="client-whatsapp" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-800 focus:border-[#d92228] focus:outline-none" placeholder="Ej. 5512345678">
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <!-- BOTÓN SÓLIDO CONTINUAR -->
-                <button onclick="proceedToPayment()" class="w-full bg-[#16a34a] text-white py-3 font-black text-sm rounded-xl border-b-4 border-[#14532d] uppercase tracking-wide active:border-b-0 active:translate-y-1">
-                    Continuar al Pago
-                </button>
-                <button onclick="closeCustomerModal()" class="w-full py-2 text-slate-500 text-xs font-black uppercase mt-1">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 2: MÉTODO DE PAGO (SOLO MERCADO PAGO, SÓLIDO Y CLARO) -->
-    <div id="payment-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[60] p-4">
-        <div class="bg-[#fcf5e3] rounded-2xl max-w-sm w-full p-6 shadow-2xl border-[4px] border-[#ffde00] text-center">
-            <h3 class="text-2xl font-normal circus-font text-[#d92228] mb-1">Pago en Línea</h3>
-            <p class="text-xs font-bold text-slate-600 mb-6">Paga de forma 100% segura para confirmar.</p>
-            
-            <!-- BOTÓN AZUL MERCADO PAGO SÓLIDO -->
-            <button onclick="payWithMercadoPago()" class="w-full bg-[#009ee3] text-white rounded-2xl p-4 border-b-4 border-[#0070a8] flex items-center justify-between active:border-b-0 active:translate-y-1 mb-4 shadow-lg">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#009ee3] text-xl">
-                        <i class="fa-solid fa-credit-card"></i>
-                    </div>
-                    <div class="text-left">
-                        <div class="font-black text-lg">Mercado Pago</div>
-                        <div class="text-[10px] font-bold text-white/90 uppercase">Tarjetas o Efectivo</div>
-                    </div>
-                </div>
-                <i class="fa-solid fa-chevron-right text-xl"></i>
-            </button>
-
-            <button onclick="closePaymentModal()" class="w-full py-2 text-slate-500 text-xs font-black uppercase">Regresar</button>
-        </div>
-    </div>
-
-    <!-- MODAL 4: PANEL DE ADMINISTRADOR -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border-4 border-[#d92228] max-h-[90vh] overflow-y-auto">
-            <div id="admin-login-view">
-                <h3 class="text-2xl font-normal circus-font text-[#d92228] mb-1 text-center">Acceso Admin</h3>
-                <input type="password" id="admin-pin" class="w-full px-4 py-3 bg-slate-100 border-2 border-slate-300 rounded-xl text-center font-black text-2xl mb-4 mt-4 tracking-[0.5em] focus:outline-none focus:border-[#d92228]" placeholder="••••">
-                <button onclick="verifyAdminPin()" class="w-full bg-[#d92228] text-white py-3 font-black rounded-xl border-b-4 border-[#7a0b10] uppercase mb-2 active:border-b-0 active:translate-y-1">Ingresar</button>
-                <button onclick="closeAdminModal()" class="w-full py-2 text-slate-500 font-black uppercase text-xs">Cancelar</button>
-            </div>
-
-            <div id="admin-dashboard-view" class="hidden space-y-4">
-                <div class="flex justify-between items-center border-b-2 pb-2">
-                    <h3 class="text-lg font-black text-slate-800">Panel de Control</h3>
-                    <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-700 text-2xl"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                    <div>
-                        <label class="block font-black text-slate-700 mb-1">Costo ($)</label>
-                        <input type="number" id="admin-price-input" class="w-full px-2 py-2 bg-slate-100 border-2 border-slate-200 rounded-lg font-bold" value="50">
-                    </div>
-                    <div>
-                        <label class="block font-black text-slate-700 mb-1">Horario</label>
-                        <input type="time" id="admin-time-input" class="w-full px-2 py-2 bg-slate-100 border-2 border-slate-200 rounded-lg font-bold" value="21:00">
-                    </div>
-                </div>
-
-                <!-- Gestor de Boletos Vendidos -->
-                <div class="border-t-2 pt-3">
-                    <h4 class="font-black text-slate-800 mb-2 flex justify-between text-xs">
-                        <span>Pendientes:</span>
-                        <span id="admin-apartados-count" class="text-orange-600">0</span>
-                    </h4>
-                    <div id="admin-apartados-list" class="max-h-32 overflow-y-auto space-y-2 border-2 border-slate-100 p-2 rounded-xl bg-slate-50">
-                    </div>
-                </div>
-
-                <div class="flex flex-col gap-2 pt-2 border-t-2">
-                    <button onclick="saveAdminSettings()" class="bg-slate-800 text-white font-black py-2 rounded-lg text-xs">Guardar Ajustes</button>
-                    <!-- Iniciar Sorteo -->
-                    <button onclick="triggerRouletteFromAdmin()" class="bg-[#ffde00] text-black font-black py-3 rounded-lg text-sm border-2 border-orange-500 shadow-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-trophy"></i> GIRAR RULETA
-                    </button>
-                    <!-- Reiniciar Día -->
-                    <button onclick="resetTicketsGrid()" class="bg-red-100 text-red-700 font-black py-2 rounded-lg text-xs mt-2">
-                        <i class="fa-solid fa-trash mr-1"></i> Borrar Todo (Nuevo Día)
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- FIREBASE SDKs -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-
-      const firebaseConfig = {
-        apiKey: "AIzaSyAXronOrMTkANuxuITolImvWU82rYBNvfk",
-        authDomain: "rifa-6ae57.firebaseapp.com",
-        projectId: "rifa-6ae57",
-        storageBucket: "rifa-6ae57.firebasestorage.app",
-        messagingSenderId: "331838719720",
-        appId: "1:331838719720:web:926563e3ae762316006b5d",
-        measurementId: "G-73HQMDWWTH"
-      };
-
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-    </script>
-
-    <!-- LÓGICA DE LA APLICACIÓN -->
-    <script>
-        let totalTickets = 100;
-        let ticketsState = JSON.parse(localStorage.getItem('jisthan_tickets')) || Array(totalTickets).fill('libre');
-        let clientDataStore = JSON.parse(localStorage.getItem('jisthan_clients')) || {}; 
-        let selectedTickets = [];
-        let ticketPrice = 50;
-
-        // Inicializar Cuadrícula
-        function renderTickets() {
-            const grid = document.getElementById('tickets-grid');
-            grid.innerHTML = '';
-            let availableCount = 0;
-            let totalAccumulated = 0;
-
-            for (let i = 0; i < totalTickets; i++) {
-                const numStr = String(i).padStart(2, '0');
-                const state = ticketsState[i];
-                if (state === 'libre') availableCount++;
-                if (state === 'vendido') {
-                    totalAccumulated += ticketPrice;
-                }
-
-                const btn = document.createElement('button');
-                btn.className = `ticket-btn py-2 md:py-3 rounded-lg font-black text-sm md:text-base border-2 flex items-center justify-center `;
-                
-                if (state === 'libre') {
-                    if (selectedTickets.includes(i)) {
-                        btn.className += `bg-[#16a34a] text-white border-[#14532d] shadow-inner`;
-                    } else {
-                        btn.className += `bg-white text-slate-700 border-slate-300`;
-                    }
-                    btn.onclick = () => toggleTicketSelection(i);
-                } else if (state === 'apartado') {
-                    btn.className += `bg-[#facc15] text-[#713f12] border-[#ca8a04] cursor-not-allowed opacity-90`;
-                    btn.disabled = true;
-                } else {
-                    btn.className += `bg-[#d92228] text-white border-[#991b1b] cursor-not-allowed opacity-90`;
-                    btn.disabled = true;
-                }
-
-                btn.innerText = numStr;
-                grid.appendChild(btn);
-            }
-
-            document.getElementById('stats-available').innerText = `${availableCount} / ${totalTickets}`;
-            document.getElementById('top-accumulator').innerText = `$${totalAccumulated} MXN`;
-            document.getElementById('display-prize-amount').innerText = `$${totalAccumulated} en Efectivo`;
-            
-            updateCartBar();
-            renderAdminApartadosList();
-        }
-
-        function toggleTicketSelection(index) {
-            const pos = selectedTickets.indexOf(index);
-            if (pos > -1) {
-                selectedTickets.splice(pos, 1);
-            } else {
-                selectedTickets.push(index);
-            }
-            renderTickets();
-        }
-
-        function updateCartBar() {
-            const cartBar = document.getElementById('floating-cart');
-            const countElem = document.getElementById('selected-count');
-            const totalElem = document.getElementById('selected-total');
-
-            countElem.innerText = selectedTickets.length;
-            totalElem.innerText = `$${selectedTickets.length * ticketPrice}`;
-
-            if (selectedTickets.length > 0) {
-                cartBar.classList.remove('translate-y-full');
-            } else {
-                cartBar.classList.add('translate-y-full');
-            }
-        }
-
-        // Modales
-        function openCustomerModal() {
-            if (selectedTickets.length === 0) return;
-            document.getElementById('customer-modal').classList.remove('hidden');
-            document.getElementById('customer-modal').classList.add('flex');
-        }
-
-        function closeCustomerModal() {
-            document.getElementById('customer-modal').classList.remove('flex');
-            document.getElementById('customer-modal').classList.add('hidden');
-        }
-
-        function proceedToPayment() {
-            const name = document.getElementById('client-name').value.trim();
-            const wats = document.getElementById('client-whatsapp').value.trim();
-
-            if (!name || !wats) {
-                alert('Por favor ingresa tu nombre y WhatsApp.');
-                return;
-            }
-
-            closeCustomerModal();
-            document.getElementById('payment-modal').classList.remove('hidden');
-            document.getElementById('payment-modal').classList.add('flex');
-        }
-
-        function closePaymentModal() {
-            document.getElementById('payment-modal').classList.remove('flex');
-            document.getElementById('payment-modal').classList.add('hidden');
-        }
-
-        function payWithMercadoPago() {
-            const name = document.getElementById('client-name').value;
-            const wats = document.getElementById('client-whatsapp').value;
-            
-            selectedTickets.forEach(idx => {
-                ticketsState[idx] = 'apartado';
-                clientDataStore[idx] = { name, whatsapp: wats };
-            });
-            localStorage.setItem('jisthan_tickets', JSON.stringify(ticketsState));
-            localStorage.setItem('jisthan_clients', JSON.stringify(clientDataStore));
-            
-            selectedTickets = [];
-            renderTickets();
-            closePaymentModal();
-            window.location.href = 'https://mpago.la/1AbhKAz';
-        }
-
-        // Admin Panel
-        function openAdminModal() {
-            document.getElementById('admin-modal').classList.remove('hidden');
-            document.getElementById('admin-modal').classList.add('flex');
-        }
-
-        function closeAdminModal() {
-            document.getElementById('admin-modal').classList.remove('flex');
-            document.getElementById('admin-modal').classList.add('hidden');
-            document.getElementById('admin-login-view').classList.remove('hidden');
-            document.getElementById('admin-dashboard-view').classList.add('hidden');
-            document.getElementById('admin-pin').value = '';
-        }
-
-        function verifyAdminPin() {
-            const pin = document.getElementById('admin-pin').value;
-            if (pin === '1834') {
-                document.getElementById('admin-login-view').classList.add('hidden');
-                document.getElementById('admin-dashboard-view').classList.remove('hidden');
-                renderAdminApartadosList();
-            } else {
-                alert('PIN Incorrecto');
-            }
-        }
-
-        function renderAdminApartadosList() {
-            const listContainer = document.getElementById('admin-apartados-list');
-            const countBadge = document.getElementById('admin-apartados-count');
-            listContainer.innerHTML = '';
-            
-            let apartadosCount = 0;
-            for (let i = 0; i < totalTickets; i++) {
-                if (ticketsState[i] === 'apartado') {
-                    apartadosCount++;
-                    const client = clientDataStore[i] || { name: 'Web', whatsapp: '--' };
-                    const numStr = String(i).padStart(2, '0');
-                    
-                    const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200 text-xs shadow-sm';
-                    div.innerHTML = `
-                        <div>
-                            <span class="font-black text-slate-800">#${numStr}</span> - <span class="font-bold text-slate-700">${client.name}</span>
-                            <div class="text-[9px] text-slate-400">Wa: ${client.whatsapp}</div>
-                        </div>
-                        <button onclick="markAsSold(${i})" class="bg-[#16a34a] text-white px-2 py-1 rounded font-black shadow-sm uppercase text-[9px]">
-                            Vender
-                        </button>
-                    `;
-                    listContainer.appendChild(div);
-                }
-            }
-
-            countBadge.innerText = apartadosCount;
-            if (apartadosCount === 0) {
-                listContainer.innerHTML = `<p class="text-slate-400 text-center py-2 font-bold text-[10px] uppercase">Ninguno</p>`;
-            }
-        }
-
-        function markAsSold(index) {
-            ticketsState[index] = 'vendido';
-            localStorage.setItem('jisthan_tickets', JSON.stringify(ticketsState));
-            renderTickets();
-            renderAdminApartadosList();
-        }
-
-        function saveAdminSettings() {
-            const price = parseFloat(document.getElementById('admin-price-input').value);
-            const time = document.getElementById('admin-time-input').value;
-
-            document.getElementById('display-ticket-price').innerText = `$${price} MXN`;
-            document.getElementById('display-draw-time').innerText = `${time} hrs`;
-            ticketPrice = price;
-
-            alert('Guardado.');
-            closeAdminModal();
-            renderTickets();
-        }
-
-        function resetTicketsGrid() {
-            if (confirm('¿BORRAR TODOS los boletos y empezar nuevo día?')) {
-                ticketsState = Array(totalTickets).fill('libre');
-                clientDataStore = {};
-                localStorage.removeItem('jisthan_tickets');
-                localStorage.removeItem('jisthan_clients');
-                selectedTickets = [];
-                renderTickets();
-                alert('Reiniciado.');
-            }
-        }
-
-        function triggerRouletteFromAdmin() {
-            closeAdminModal();
-            document.getElementById('roulette-section').scrollIntoView({ behavior: 'smooth' });
-            spinWheel();
-        }
-
-        // Ruleta
-        const canvas = document.getElementById('wheelCanvas');
-        const ctx = canvas.getContext('2d');
-        let currentAngle = 0;
-        let isSpinning = false;
-        let activeParticipants = [];
-
-        function drawWheel(angle = 0, participants = []) {
-            const center = canvas.width / 2;
-            const radius = center - 10;
-            const count = participants.length > 0 ? participants.length : 1;
-            const sliceAngle = (2 * Math.PI) / count;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            for (let i = 0; i < count; i++) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(center, center);
-                ctx.arc(center, center, radius, angle + i * sliceAngle, angle + (i + 1) * sliceAngle);
-                ctx.closePath();
-
-                ctx.fillStyle = i % 2 === 0 ? '#d92228' : '#ffde00';
-                ctx.fill();
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-
-                ctx.save();
-                ctx.translate(center, center);
-                ctx.rotate(angle + i * sliceAngle + sliceAngle / 2);
-                ctx.textAlign = 'right';
-                ctx.fillStyle = i % 2 === 0 ? '#ffffff' : '#d92228';
-                ctx.font = '900 14px Montserrat';
-                const label = participants.length > 0 ? String(participants[i]).padStart(2, '0') : '--';
-                ctx.fillText(label, radius - 15, 5);
-                ctx.restore();
-                ctx.restore();
-            }
-
-            ctx.beginPath();
-            ctx.arc(center, center, 25, 0, 2 * Math.PI);
-            ctx.fillStyle = '#0a1647';
-            ctx.fill();
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = '#ffde00';
-            ctx.stroke();
-        }
-
-        function playTickSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.05);
-            } catch(e) {}
-        }
-
-        function spinWheel() {
-            if (isSpinning) return;
-
-            activeParticipants = [];
-            for (let i = 0; i < totalTickets; i++) {
-                if (ticketsState[i] === 'vendido') {
-                    activeParticipants.push(i);
-                }
-            }
-
-            if (activeParticipants.length === 0) {
-                alert('No hay boletos VENDIDOS para el sorteo.');
-                return;
-            }
-
-            isSpinning = true;
-            document.getElementById('winner-announcement').classList.add('hidden');
-
-            let spinTime = 0;
-            let spinTimeTotal = 6000;
-            let startAngle = currentAngle;
-            let targetAngle = currentAngle + Math.PI * 2 * 10 + Math.random() * Math.PI * 2;
-
-            function easeOutCubic(t) { return (--t) * t * t + 1; }
-
-            function animateSpin() {
-                spinTime += 40;
-                if (spinTime >= spinTimeTotal) {
-                    isSpinning = false;
-                    currentAngle = targetAngle % (Math.PI * 2);
-                    determineWinner(currentAngle, activeParticipants);
-                    return;
-                }
-                let progress = spinTime / spinTimeTotal;
-                currentAngle = startAngle + (targetAngle - startAngle) * easeOutCubic(progress);
-                drawWheel(currentAngle, activeParticipants);
-                playTickSound();
-                setTimeout(animateSpin, 40);
-            }
-            animateSpin();
-        }
-
-        function determineWinner(angle, participants) {
-            const count = participants.length;
-            const normalizedAngle = (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI);
-            const sliceAngle = (2 * Math.PI) / count;
-            const winningSliceIndex = Math.floor(normalizedAngle / sliceAngle) % count;
-            const winningTicketNum = participants[winningSliceIndex];
-            const winningNumStr = String(winningTicketNum).padStart(2, '0');
-            
-            const clientInfo = clientDataStore[winningTicketNum] || { name: 'Afortunado' };
-
-            document.getElementById('winner-number').innerText = winningNumStr;
-            document.getElementById('winner-name-display').innerText = clientInfo.name;
-            document.getElementById('winner-announcement').classList.remove('hidden');
-
-            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#d92228', '#ffde00', '#0a1647'] });
-        }
-
-        // Carga inicial
-        renderTickets();
-        drawWheel(0, Array.from({length: 100}, (_, i) => i));
-    </script>
-</body>
-</html>
+                    <input type="tel" id="client-whatsapp" class="w-full px-4 py-3 bg-white
