@@ -116,14 +116,12 @@
             <i class="fa-solid fa-bolt absolute -right-6 top-3 neon-text-cyan text-xl"></i>
         </div>
 
-        <!-- Contenedor del Acumulado y Usuarios Online -->
+        <!-- Contenedor del Acumulado -->
         <div class="relative mt-8 w-full max-w-[95%] md:max-w-md mx-auto">
-            <!-- Etiqueta EN VIVO y Conectados -->
+            <!-- Etiqueta EN VIVO -->
             <div class="absolute -top-3 left-4 md:left-8 bg-black text-[#39ff14] text-[10px] md:text-xs font-bold px-3 py-1 rounded-sm border border-[#39ff14] shadow-[0_0_10px_rgba(57,255,20,0.5)] z-20 flex items-center gap-2 uppercase tracking-widest">
                 <div class="w-2 h-2 bg-[#39ff14] rounded-full animate-pulse shadow-[0_0_5px_#39ff14]"></div> 
                 <span>EN VIVO</span>
-                <span class="text-slate-500">|</span>
-                <span class="text-[#00f3ff]"><i class="fa-solid fa-users mr-1"></i><span id="online-users-count">1</span> online</span>
             </div>
             
             <!-- Caja Acumulado -->
@@ -216,7 +214,7 @@
 
             <!-- CUADRÍCULA DE BOLETOS -->
             <div id="tickets-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2 max-h-[380px] overflow-y-auto p-3 bg-black border border-[#00f3ff]/30 rounded-lg shadow-inner">
-                <!-- Generado por JavaScript -->
+                <!-- Generado dinámicamente por JavaScript -->
             </div>
         </section>
 
@@ -322,6 +320,14 @@
                     <h3 class="text-lg font-black text-white uppercase tracking-widest"><i class="fa-solid fa-server text-[#00f3ff] mr-2"></i> Dashboard</h3>
                     <button onclick="closeAdminModal()" class="text-slate-500 hover:text-[#ff00ff] text-2xl"><i class="fa-solid fa-xmark"></i></button>
                 </div>
+
+                <!-- CONTADOR DE USUARIOS EN LÍNEA DENTRO DEL PANEL DE ADMIN -->
+                <div class="bg-black/80 border border-[#00f3ff] p-3 rounded-md flex items-center justify-between shadow-[0_0_10px_rgba(0,243,255,0.2)]">
+                    <span class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-users text-[#00f3ff]"></i> Usuarios en línea:
+                    </span>
+                    <span id="admin-online-users" class="neon-text-cyan neon-font text-lg font-black">1</span>
+                </div>
                 
                 <div class="grid grid-cols-2 gap-3 text-xs">
                     <div>
@@ -363,7 +369,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAXronOrMTkANuxuITolImvWU82rYBNvfk",
@@ -388,24 +394,27 @@
         let localGameState = "idle";
         let lastHandledSpinId = null;
 
-        // --- PRESENCIA EN LÍNEA SIMULADA POR LOCALSTORAGE / HEARTBEAT ---
+        // --- SISTEMA DE PRESENCIA DE USUARIOS (EN LÍNEA) ---
         function setupPresence() {
             let clientId = localStorage.getItem('rifas_client_id');
             if(!clientId) {
-                clientId = 'client_' + Math.random().toString(36.substr(2, 9));
+                clientId = 'client_' + Math.random().toString(36).substr(2, 9);
                 localStorage.setItem('rifas_client_id', clientId);
             }
             
-            // Actualizar presencia local cada 10 segundos
-            setInterval(async () => {
+            // Enviar pulso de actividad cada 8 segundos
+            const updateHeartbeat = async () => {
                 try {
-                    const presenceRef = doc(db, "rifas", "Principal");
+                    const docRef = doc(db, "rifas", "Principal");
                     const now = Date.now();
-                    await updateDoc(presenceRef, {
+                    await updateDoc(docRef, {
                         [`presence.${clientId}`]: now
                     });
                 } catch(e) {}
-            }, 10000);
+            };
+
+            updateHeartbeat();
+            setInterval(updateHeartbeat, 8000);
         }
 
         // --- ESCUCHA EN TIEMPO REAL CON ONSNAPSHOT ---
@@ -419,14 +428,15 @@
                     if (data.price !== undefined) ticketPrice = data.price;
                     if (data.time) drawTime = data.time;
 
-                    // Calcular usuarios online (activos en los últimos 20 segundos)
+                    // Calcular personas en línea (activas en los últimos 20 segundos)
                     if (data.presence) {
                         const now = Date.now();
                         let activeCount = 0;
                         Object.values(data.presence).forEach(timestamp => {
                             if (now - timestamp < 20000) activeCount++;
                         });
-                        document.getElementById('online-users-count').innerText = Math.max(1, activeCount);
+                        const adminOnlineCountElem = document.getElementById('admin-online-users');
+                        if (adminOnlineCountElem) adminOnlineCountElem.innerText = Math.max(1, activeCount);
                     }
 
                     // Actualizar UI general
@@ -479,7 +489,7 @@
             }
         }
 
-        // Inicializar Cuadrícula
+        // Renderizado de la Cuadrícula de Boletos
         function renderTickets() {
             const grid = document.getElementById('tickets-grid');
             if(!grid) return;
@@ -550,7 +560,7 @@
             }
         }
 
-        // Modales
+        // Modales de Cliente
         window.openCustomerModal = function() {
             if (selectedTickets.length === 0) return;
             document.getElementById('customer-modal').classList.remove('hidden');
@@ -597,7 +607,7 @@
             window.location.href = 'https://mpago.la/1AbhKAz';
         }
 
-        // Admin Panel
+        // Panel Administrador
         window.openAdminModal = function() {
             document.getElementById('admin-modal').classList.remove('hidden');
             document.getElementById('admin-modal').classList.add('flex');
@@ -671,7 +681,7 @@
             document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
 
             await saveDataToCloud();
-            alert('Configuración del sistema guardada en la nube.');
+            alert('Configuración guardada en la nube.');
             renderTickets();
         }
 
@@ -687,7 +697,7 @@
             }
         }
 
-        // --- DISPARADOR ADMIN: GENERA GANADOR Y SINCRONIZA EXACTO ---
+        // --- DISPARADOR ADMIN: GENERA GANADOR Y SINCRONIZA SIN CERRAR PANEL ---
         window.triggerRouletteFromAdmin = async function() {
             let activeParticipants = [];
             for (let i = 0; i < totalTickets; i++) {
@@ -701,12 +711,12 @@
                 return;
             }
 
-            // Seleccionar un ganador aleatorio predeterminado por el Admin
+            // Seleccionar ganador determinista
             const randomIndex = Math.floor(Math.random() * activeParticipants.length);
             const winningTicket = activeParticipants[randomIndex];
             const uniqueSpinId = 'spin_' + Date.now();
 
-            // Actualizar Firestore para disparar el giro exactamente con el mismo ganador en todos
+            // NOTA: NO cerramos el modal (openAdminModal) para mantener al admin en el panel.
             await updateDoc(doc(db, "rifas", "Principal"), { 
                 gameState: "spinning",
                 winningIndex: winningTicket,
@@ -714,7 +724,7 @@
             });
         }
 
-        // Ruleta Cyberpunk
+        // DIBUJO Y ANIMACIÓN DE LA RULETA
         const canvas = document.getElementById('wheelCanvas');
         const ctx = canvas.getContext('2d');
         let currentAngle = 0;
@@ -801,7 +811,7 @@
             const count = activeParticipants.length;
             const sliceAngle = (2 * Math.PI) / count;
             
-            // Calcular ángulo exacto para que caiga en el ticket ganador seleccionado por el Admin
+            // Ángulo exacto hacia la rebanada ganadora
             const targetSliceCenter = winningIndex * sliceAngle + sliceAngle / 2;
             const desiredNormalizedAngle = (2 * Math.PI - targetSliceCenter) % (2 * Math.PI);
             
@@ -846,7 +856,7 @@
             confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#ff00ff', '#00f3ff', '#39ff14', '#ffffff'] });
         }
 
-        // Arrancar el sistema en tiempo real y presencia
+        // Inicialización general
         initRealtimeListener();
         setupPresence();
         drawWheel(0, Array.from({length: 100}, (_, i) => i));
