@@ -167,7 +167,7 @@
                         <i class="fa-solid fa-ticket neon-text-cyan text-2xl -rotate-12"></i>
                         <div class="text-left leading-tight">
                             <span class="text-[9px] font-black text-slate-400 block uppercase tracking-wider">Costo Boleto</span>
-                            <span id="display-ticket-price" class="neon-text-cyan text-lg font-black block">$50 MXN</span>
+                            <span id="display-ticket-price" class="neon-text-cyan text-lg font-black block">$10 MXN</span>
                         </div>
                     </div>
                     <div class="flex-1 bg-black border border-[#ff00ff] shadow-[0_0_10px_rgba(255,0,255,0.2)] rounded-lg p-3 flex items-center justify-center gap-3">
@@ -323,7 +323,7 @@
                 <div class="grid grid-cols-2 gap-3 text-xs">
                     <div>
                         <label class="block font-black text-[#00f3ff] mb-1 uppercase">Costo ($)</label>
-                        <input type="number" id="admin-price-input" class="w-full px-2 py-2 neon-input rounded-sm font-bold text-center" value="50">
+                        <input type="number" id="admin-price-input" class="w-full px-2 py-2 neon-input rounded-sm font-bold text-center" value="10">
                     </div>
                     <div>
                         <label class="block font-black text-[#00f3ff] mb-1 uppercase">Hora</label>
@@ -356,56 +356,94 @@
         </div>
     </div>
 
-    <!-- FIREBASE SDKs -->
+    <!-- FIREBASE & LÓGICA DE LA APLICACIÓN -->
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyAXronOrMTkANuxuITolImvWU82rYBNvfk",
-        authDomain: "rifa-6ae57.firebaseapp.com",
-        projectId: "rifa-6ae57",
-        storageBucket: "rifa-6ae57.firebasestorage.app",
-        messagingSenderId: "331838719720",
-        appId: "1:331838719720:web:926563e3ae762316006b5d",
-        measurementId: "G-73HQMDWWTH"
-      };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAXronOrMTkANuxuITolImvWU82rYBNvfk",
+            authDomain: "rifa-6ae57.firebaseapp.com",
+            projectId: "rifa-6ae57",
+            storageBucket: "rifa-6ae57.firebasestorage.app",
+            messagingSenderId: "331838719720",
+            appId: "1:331838719720:web:926563e3ae762316006b5d",
+            measurementId: "G-73HQMDWWTH"
+        };
 
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-    </script>
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
 
-    <!-- LÓGICA DE LA APLICACIÓN -->
-    <script>
         let totalTickets = 100;
-        let ticketsState = JSON.parse(localStorage.getItem('jisthan_tickets')) || Array(totalTickets).fill('libre');
-        let clientDataStore = JSON.parse(localStorage.getItem('jisthan_clients')) || {}; 
+        let ticketsState = Array(totalTickets).fill('libre');
+        let clientDataStore = {}; 
         let selectedTickets = [];
-        let ticketPrice = 50;
+        let ticketPrice = 10;
+        let drawTime = "21:00";
+
+        // --- SINCRONIZACIÓN CON FIREBASE ---
+        async function loadDataFromCloud() {
+            try {
+                const docRef = doc(db, "rifas", "Principal");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.tickets) ticketsState = data.tickets;
+                    if (data.clients) clientDataStore = data.clients;
+                    if (data.price !== undefined) ticketPrice = data.price;
+                    if (data.time) drawTime = data.time;
+                } else {
+                    await saveDataToCloud();
+                }
+            } catch (e) {
+                console.error("Error al cargar de Firebase, usando respaldo local:", e);
+                ticketsState = JSON.parse(localStorage.getItem('jisthan_tickets')) || Array(totalTickets).fill('libre');
+                clientDataStore = JSON.parse(localStorage.getItem('jisthan_clients')) || {};
+            }
+            document.getElementById('admin-price-input').value = ticketPrice;
+            document.getElementById('admin-time-input').value = drawTime;
+            document.getElementById('display-ticket-price').innerText = `$${ticketPrice} MXN`;
+            document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
+            renderTickets();
+        }
+
+        async function saveDataToCloud() {
+            try {
+                await setDoc(doc(db, "rifas", "Principal"), {
+                    tickets: ticketsState,
+                    clients: clientDataStore,
+                    price: ticketPrice,
+                    time: drawTime
+                });
+            } catch (e) {
+                console.error("Error al guardar en Firebase:", e);
+                localStorage.setItem('jisthan_tickets', JSON.stringify(ticketsState));
+                localStorage.setItem('jisthan_clients', JSON.stringify(clientDataStore));
+            }
+        }
 
         // --- EASTER EGG: 5 TOQUES EN "RIFAS" PARA MOSTRAR/OCULTAR ADMIN ---
         let tapCount = 0;
         let tapTimer = null;
 
-        function handleSecretTap() {
+        window.handleSecretTap = function() {
             tapCount++;
             clearTimeout(tapTimer);
-            
             if (tapCount >= 5) {
                 const adminBtn = document.getElementById('admin-btn-container');
                 adminBtn.classList.toggle('hidden'); 
                 tapCount = 0; 
             } else {
-                tapTimer = setTimeout(() => {
-                    tapCount = 0;
-                }, 1000); 
+                tapTimer = setTimeout(() => { tapCount = 0; }, 1000); 
             }
         }
-        // -----------------------------------------------------------------
 
         // Inicializar Cuadrícula
         function renderTickets() {
             const grid = document.getElementById('tickets-grid');
+            if(!grid) return;
             grid.innerHTML = '';
             let availableCount = 0;
             let totalAccumulated = 0;
@@ -474,18 +512,18 @@
         }
 
         // Modales
-        function openCustomerModal() {
+        window.openCustomerModal = function() {
             if (selectedTickets.length === 0) return;
             document.getElementById('customer-modal').classList.remove('hidden');
             document.getElementById('customer-modal').classList.add('flex');
         }
 
-        function closeCustomerModal() {
+        window.closeCustomerModal = function() {
             document.getElementById('customer-modal').classList.remove('flex');
             document.getElementById('customer-modal').classList.add('hidden');
         }
 
-        function proceedToPayment() {
+        window.proceedToPayment = function() {
             const name = document.getElementById('client-name').value.trim();
             const wats = document.getElementById('client-whatsapp').value.trim();
 
@@ -499,12 +537,12 @@
             document.getElementById('payment-modal').classList.add('flex');
         }
 
-        function closePaymentModal() {
+        window.closePaymentModal = function() {
             document.getElementById('payment-modal').classList.remove('flex');
             document.getElementById('payment-modal').classList.add('hidden');
         }
 
-        function payWithMercadoPago() {
+        window.payWithMercadoPago = async function() {
             const name = document.getElementById('client-name').value;
             const wats = document.getElementById('client-whatsapp').value;
             
@@ -512,9 +550,8 @@
                 ticketsState[idx] = 'apartado';
                 clientDataStore[idx] = { name, whatsapp: wats };
             });
-            localStorage.setItem('jisthan_tickets', JSON.stringify(ticketsState));
-            localStorage.setItem('jisthan_clients', JSON.stringify(clientDataStore));
             
+            await saveDataToCloud();
             selectedTickets = [];
             renderTickets();
             closePaymentModal();
@@ -522,12 +559,12 @@
         }
 
         // Admin Panel
-        function openAdminModal() {
+        window.openAdminModal = function() {
             document.getElementById('admin-modal').classList.remove('hidden');
             document.getElementById('admin-modal').classList.add('flex');
         }
 
-        function closeAdminModal() {
+        window.closeAdminModal = function() {
             document.getElementById('admin-modal').classList.remove('flex');
             document.getElementById('admin-modal').classList.add('hidden');
             document.getElementById('admin-login-view').classList.remove('hidden');
@@ -535,7 +572,7 @@
             document.getElementById('admin-pin').value = '';
         }
 
-        function verifyAdminPin() {
+        window.verifyAdminPin = function() {
             const pin = document.getElementById('admin-pin').value;
             if (pin === '1834') {
                 document.getElementById('admin-login-view').classList.add('hidden');
@@ -549,6 +586,7 @@
         function renderAdminApartadosList() {
             const listContainer = document.getElementById('admin-apartados-list');
             const countBadge = document.getElementById('admin-apartados-count');
+            if(!listContainer) return;
             listContainer.innerHTML = '';
             
             let apartadosCount = 0;
@@ -579,39 +617,38 @@
             }
         }
 
-        function markAsSold(index) {
+        window.markAsSold = async function(index) {
             ticketsState[index] = 'vendido';
-            localStorage.setItem('jisthan_tickets', JSON.stringify(ticketsState));
+            await saveDataToCloud();
             renderTickets();
             renderAdminApartadosList();
         }
 
-        function saveAdminSettings() {
-            const price = parseFloat(document.getElementById('admin-price-input').value);
-            const time = document.getElementById('admin-time-input').value;
+        window.saveAdminSettings = async function() {
+            ticketPrice = parseFloat(document.getElementById('admin-price-input').value);
+            drawTime = document.getElementById('admin-time-input').value;
 
-            document.getElementById('display-ticket-price').innerText = `$${price} MXN`;
-            document.getElementById('display-draw-time').innerText = `${time} hrs`;
-            ticketPrice = price;
+            document.getElementById('display-ticket-price').innerText = `$${ticketPrice} MXN`;
+            document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
 
-            alert('Configuración del sistema actualizada.');
+            await saveDataToCloud();
+            alert('Configuración del sistema guardada en la nube.');
             closeAdminModal();
             renderTickets();
         }
 
-        function resetTicketsGrid() {
-            if (confirm('¿ADVERTENCIA: Purgar todos los registros y reiniciar base de datos?')) {
+        window.resetTicketsGrid = async function() {
+            if (confirm('¿ADVERTENCIA: Purgar todos los registros de la nube y reiniciar base de datos?')) {
                 ticketsState = Array(totalTickets).fill('libre');
                 clientDataStore = {};
-                localStorage.removeItem('jisthan_tickets');
-                localStorage.removeItem('jisthan_clients');
+                await saveDataToCloud();
                 selectedTickets = [];
                 renderTickets();
                 alert('Sistema purgado correctamente.');
             }
         }
 
-        function triggerRouletteFromAdmin() {
+        window.triggerRouletteFromAdmin = function() {
             closeAdminModal();
             document.getElementById('roulette-section').scrollIntoView({ behavior: 'smooth' });
             spinWheel();
@@ -625,6 +662,7 @@
         let activeParticipants = [];
 
         function drawWheel(angle = 0, participants = []) {
+            if(!canvas) return;
             const center = canvas.width / 2;
             const radius = center - 10;
             const count = participants.length > 0 ? participants.length : 1;
@@ -741,8 +779,8 @@
             confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#ff00ff', '#00f3ff', '#39ff14', '#ffffff'] });
         }
 
-        // Carga inicial
-        renderTickets();
+        // Carga inicial conectada a Cloud Firestore
+        loadDataFromCloud();
         drawWheel(0, Array.from({length: 100}, (_, i) => i));
     </script>
 </body>
