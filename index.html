@@ -201,7 +201,7 @@
                         <i class="fa-regular fa-clock neon-text-magenta text-2xl"></i>
                         <div class="text-left leading-tight">
                             <span class="text-[9px] font-black text-slate-400 block uppercase tracking-wider">Hora Sorteo</span>
-                            <span id="display-draw-time" class="neon-text-magenta text-lg font-black block">21:00 hrs</span>
+                            <span id="display-draw-time" class="neon-text-magenta text-lg font-black block">09:00 pm</span>
                         </div>
                     </div>
                 </div>
@@ -430,7 +430,7 @@
                         <input type="number" id="admin-price-input" class="w-full px-2 py-2 neon-input rounded-sm font-bold text-center" value="10">
                     </div>
                     <div>
-                        <label class="block font-black text-[#00f3ff] mb-1 uppercase">Hora</label>
+                        <label class="block font-black text-[#00f3ff] mb-1 uppercase">Hora (12h)</label>
                         <input type="time" id="admin-time-input" class="w-full px-2 py-2 neon-input rounded-sm font-bold text-center" value="21:00">
                     </div>
                 </div>
@@ -502,10 +502,20 @@
         let lastHandledSpinId = null;
         let lastHandledAudioId = null;
         let deliveryEvidences = [];
-        let userReviews = [
-            { author: "Carlos M.", text: "¡Increíble y 100% real! Me cayó el depósito directo a mi cuenta en menos de 10 minutos después del sorteo.", rating: 5, ticket: "#23" },
-            { author: "Alejandra R.", text: "Al principio dudaba, pero la ruleta en vivo transparente da mucha confianza. ¡Muchas gracias JISTHAN!", rating: 5, ticket: "#77" }
-        ];
+        let userReviews = []; // Vacío por defecto, solo reseñas reales de la gente
+
+        // Función auxiliar para convertir formato 24h (ej: 21:00) a 12h (ej: 09:00 pm)
+        function format12Hour(time24) {
+            if (!time24) return "09:00 pm";
+            let parts = time24.split(':');
+            let hours = parseInt(parts[0], 10);
+            let minutes = parts[1] || '00';
+            let ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // la hora '0' debe ser '12'
+            let formattedHours = hours < 10 ? '0' + hours : hours;
+            return `${formattedHours}:${minutes} ${ampm}`;
+        }
 
         // --- GRABACIÓN Y BORRADO DE AUDIO WALKIE-TALKIE ---
         let mediaRecorder;
@@ -647,7 +657,7 @@
                     document.getElementById('admin-price-input').value = ticketPrice;
                     document.getElementById('admin-time-input').value = drawTime;
                     document.getElementById('display-ticket-price').innerText = `$${ticketPrice} MXN`;
-                    document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
+                    document.getElementById('display-draw-time').innerText = format12Hour(drawTime);
                     renderTickets();
                     renderEvidences();
                     renderReviews();
@@ -708,6 +718,11 @@
             const container = document.getElementById('reviews-container');
             if(!container) return;
             container.innerHTML = '';
+
+            if(userReviews.length === 0) {
+                container.innerHTML = `<div class="text-center text-slate-500 text-xs py-3 italic">Sé el primero en dejar tu reseña sobre el sorteo.</div>`;
+                return;
+            }
 
             userReviews.forEach((rev) => {
                 container.innerHTML += `
@@ -977,7 +992,7 @@
             drawTime = document.getElementById('admin-time-input').value;
 
             document.getElementById('display-ticket-price').innerText = `$${ticketPrice} MXN`;
-            document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
+            document.getElementById('display-draw-time').innerText = format12Hour(drawTime);
 
             await saveDataToCloud();
             alert('Configuración guardada en la nube.');
