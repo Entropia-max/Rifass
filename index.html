@@ -116,11 +116,14 @@
             <i class="fa-solid fa-bolt absolute -right-6 top-3 neon-text-cyan text-xl"></i>
         </div>
 
-        <!-- Contenedor del Acumulado -->
+        <!-- Contenedor del Acumulado y Usuarios Online -->
         <div class="relative mt-8 w-full max-w-[95%] md:max-w-md mx-auto">
-            <!-- Etiqueta EN VIVO -->
-            <div class="absolute -top-3 left-4 md:left-8 bg-black text-[#39ff14] text-[10px] md:text-xs font-bold px-3 py-1 rounded-sm border border-[#39ff14] shadow-[0_0_10px_rgba(57,255,20,0.5)] z-20 flex items-center gap-1.5 uppercase tracking-widest">
-                <div class="w-2 h-2 bg-[#39ff14] rounded-full animate-pulse shadow-[0_0_5px_#39ff14]"></div> EN VIVO
+            <!-- Etiqueta EN VIVO y Conectados -->
+            <div class="absolute -top-3 left-4 md:left-8 bg-black text-[#39ff14] text-[10px] md:text-xs font-bold px-3 py-1 rounded-sm border border-[#39ff14] shadow-[0_0_10px_rgba(57,255,20,0.5)] z-20 flex items-center gap-2 uppercase tracking-widest">
+                <div class="w-2 h-2 bg-[#39ff14] rounded-full animate-pulse shadow-[0_0_5px_#39ff14]"></div> 
+                <span>EN VIVO</span>
+                <span class="text-slate-500">|</span>
+                <span class="text-[#00f3ff]"><i class="fa-solid fa-users mr-1"></i><span id="online-users-count">1</span> online</span>
             </div>
             
             <!-- Caja Acumulado -->
@@ -383,6 +386,27 @@
         let ticketPrice = 10;
         let drawTime = "21:00";
         let localGameState = "idle";
+        let lastHandledSpinId = null;
+
+        // --- PRESENCIA EN LÍNEA SIMULADA POR LOCALSTORAGE / HEARTBEAT ---
+        function setupPresence() {
+            let clientId = localStorage.getItem('rifas_client_id');
+            if(!clientId) {
+                clientId = 'client_' + Math.random().toString(36.substr(2, 9));
+                localStorage.setItem('rifas_client_id', clientId);
+            }
+            
+            // Actualizar presencia local cada 10 segundos
+            setInterval(async () => {
+                try {
+                    const presenceRef = doc(db, "rifas", "Principal");
+                    const now = Date.now();
+                    await updateDoc(presenceRef, {
+                        [`presence.${clientId}`]: now
+                    });
+                } catch(e) {}
+            }, 10000);
+        }
 
         // --- ESCUCHA EN TIEMPO REAL CON ONSNAPSHOT ---
         function initRealtimeListener() {
@@ -395,6 +419,16 @@
                     if (data.price !== undefined) ticketPrice = data.price;
                     if (data.time) drawTime = data.time;
 
+                    // Calcular usuarios online (activos en los últimos 20 segundos)
+                    if (data.presence) {
+                        const now = Date.now();
+                        let activeCount = 0;
+                        Object.values(data.presence).forEach(timestamp => {
+                            if (now - timestamp < 20000) activeCount++;
+                        });
+                        document.getElementById('online-users-count').innerText = Math.max(1, activeCount);
+                    }
+
                     // Actualizar UI general
                     document.getElementById('admin-price-input').value = ticketPrice;
                     document.getElementById('admin-time-input').value = drawTime;
@@ -402,11 +436,12 @@
                     document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
                     renderTickets();
 
-                    // Detectar si el admin ordenó iniciar la ruleta en tiempo real
-                    if (data.gameState === "spinning" && localGameState !== "spinning") {
+                    // Detectar orden de giro sincronizado y ID de sorteo único
+                    if (data.gameState === "spinning" && data.spinId && data.spinId !== lastHandledSpinId) {
+                        lastHandledSpinId = data.spinId;
                         localGameState = "spinning";
                         document.getElementById('roulette-section').scrollIntoView({ behavior: 'smooth' });
-                        spinWheel();
+                        spinWheelWithWinner(data.winningIndex);
                     } else if (data.gameState === "idle") {
                         localGameState = "idle";
                     }
@@ -637,7 +672,6 @@
 
             await saveDataToCloud();
             alert('Configuración del sistema guardada en la nube.');
-            closeAdminModal();
             renderTickets();
         }
 
@@ -653,6 +687,7 @@
             }
         }
 
+        // --- DISPARADOR ADMIN: GENERA GANADOR Y SINCRONIZA EXACTO ---
         window.triggerRouletteFromAdmin = async function() {
             let activeParticipants = [];
             for (let i = 0; i < totalTickets; i++) {
@@ -666,10 +701,17 @@
                 return;
             }
 
-            closeAdminModal();
-            localGameState = "spinning";
-            // Actualizar Firestore para que todos los dispositivos disparen el evento "spinning"
-            await updateDoc(doc(db, "rifas", "Principal"), { gameState: "spinning" });
+            // Seleccionar un ganador aleatorio predeterminado por el Admin
+            const randomIndex = Math.floor(Math.random() * activeParticipants.length);
+            const winningTicket = activeParticipants[randomIndex];
+            const uniqueSpinId = 'spin_' + Date.now();
+
+            // Actualizar Firestore para disparar el giro exactamente con el mismo ganador en todos
+            await updateDoc(doc(db, "rifas", "Principal"), { 
+                gameState: "spinning",
+                winningIndex: winningTicket,
+                spinId: uniqueSpinId
+            });
         }
 
         // Ruleta Cyberpunk
@@ -738,7 +780,7 @@
             } catch(e) {}
         }
 
-        function spinWheel() {
+        function spinWheelWithWinner(targetWinningTicket) {
             if (isSpinning) return;
 
             activeParticipants = [];
@@ -750,13 +792,28 @@
 
             if (activeParticipants.length === 0) return;
 
+            const winningIndex = activeParticipants.indexOf(targetWinningTicket);
+            if (winningIndex === -1) return;
+
             isSpinning = true;
             document.getElementById('winner-announcement').classList.add('hidden');
 
+            const count = activeParticipants.length;
+            const sliceAngle = (2 * Math.PI) / count;
+            
+            // Calcular ángulo exacto para que caiga en el ticket ganador seleccionado por el Admin
+            const targetSliceCenter = winningIndex * sliceAngle + sliceAngle / 2;
+            const desiredNormalizedAngle = (2 * Math.PI - targetSliceCenter) % (2 * Math.PI);
+            
             let spinTime = 0;
             let spinTimeTotal = 6000;
             let startAngle = currentAngle;
-            let targetAngle = currentAngle + Math.PI * 2 * 10 + Math.random() * Math.PI * 2;
+            let extraSpins = Math.PI * 2 * 10; 
+            let currentNormalized = startAngle % (2 * Math.PI);
+            let angleDiff = desiredNormalizedAngle - currentNormalized;
+            if (angleDiff < 0) angleDiff += Math.PI * 2;
+
+            let targetAngle = startAngle + extraSpins + angleDiff;
 
             function easeOutCubic(t) { return (--t) * t * t + 1; }
 
@@ -765,7 +822,8 @@
                 if (spinTime >= spinTimeTotal) {
                     isSpinning = false;
                     currentAngle = targetAngle % (Math.PI * 2);
-                    determineWinner(currentAngle, activeParticipants);
+                    drawWheel(currentAngle, activeParticipants);
+                    showWinnerDetails(targetWinningTicket);
                     return;
                 }
                 let progress = spinTime / spinTimeTotal;
@@ -777,14 +835,8 @@
             animateSpin();
         }
 
-        function determineWinner(angle, participants) {
-            const count = participants.length;
-            const normalizedAngle = (2 * Math.PI - (angle % (2 * Math.PI))) % (2 * Math.PI);
-            const sliceAngle = (2 * Math.PI) / count;
-            const winningSliceIndex = Math.floor(normalizedAngle / sliceAngle) % count;
-            const winningTicketNum = participants[winningSliceIndex];
+        function showWinnerDetails(winningTicketNum) {
             const winningNumStr = String(winningTicketNum).padStart(2, '0');
-            
             const clientInfo = clientDataStore[winningTicketNum] || { name: 'Usuario Desconocido' };
 
             document.getElementById('winner-number').innerText = winningNumStr;
@@ -794,8 +846,9 @@
             confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#ff00ff', '#00f3ff', '#39ff14', '#ffffff'] });
         }
 
-        // Arrancar el sistema en tiempo real
+        // Arrancar el sistema en tiempo real y presencia
         initRealtimeListener();
+        setupPresence();
         drawWheel(0, Array.from({length: 100}, (_, i) => i));
     </script>
 </body>
