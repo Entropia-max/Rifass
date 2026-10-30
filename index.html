@@ -218,9 +218,9 @@
         </section>
 
         <!-- SECCIÓN DE RULETA / SORTEO EN VIVO -->
-        <section id="roulette-section" class="neon-box-magenta rounded-xl p-6 mb-8 text-center hidden-unless-admin">
+        <section id="roulette-section" class="neon-box-magenta rounded-xl p-6 mb-8 text-center">
             <h3 class="text-2xl font-black neon-font neon-text-magenta mb-2 uppercase tracking-widest">Sorteo de Red</h3>
-            <p class="text-xs font-bold text-slate-500 mb-6 uppercase tracking-widest">Protocolo de Admin</p>
+            <p class="text-xs font-bold text-slate-500 mb-6 uppercase tracking-widest">Protocolo en Vivo</p>
             
             <div class="relative max-w-[280px] mx-auto aspect-square flex items-center justify-center bg-black rounded-full p-2 border-[4px] border-[#00f3ff] shadow-[0_0_30px_rgba(0,243,255,0.4)]">
                 <!-- Indicador Superior -->
@@ -360,7 +360,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAXronOrMTkANuxuITolImvWU82rYBNvfk",
@@ -382,31 +382,36 @@
         let selectedTickets = [];
         let ticketPrice = 10;
         let drawTime = "21:00";
+        let localGameState = "idle";
 
-        // --- SINCRONIZACIÓN CON FIREBASE ---
-        async function loadDataFromCloud() {
-            try {
-                const docRef = doc(db, "rifas", "Principal");
-                const docSnap = await getDoc(docRef);
+        // --- ESCUCHA EN TIEMPO REAL CON ONSNAPSHOT ---
+        function initRealtimeListener() {
+            const docRef = doc(db, "rifas", "Principal");
+            onSnapshot(docRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (data.tickets) ticketsState = data.tickets;
                     if (data.clients) clientDataStore = data.clients;
                     if (data.price !== undefined) ticketPrice = data.price;
                     if (data.time) drawTime = data.time;
-                } else {
-                    await saveDataToCloud();
+
+                    // Actualizar UI general
+                    document.getElementById('admin-price-input').value = ticketPrice;
+                    document.getElementById('admin-time-input').value = drawTime;
+                    document.getElementById('display-ticket-price').innerText = `$${ticketPrice} MXN`;
+                    document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
+                    renderTickets();
+
+                    // Detectar si el admin ordenó iniciar la ruleta en tiempo real
+                    if (data.gameState === "spinning" && localGameState !== "spinning") {
+                        localGameState = "spinning";
+                        document.getElementById('roulette-section').scrollIntoView({ behavior: 'smooth' });
+                        spinWheel();
+                    } else if (data.gameState === "idle") {
+                        localGameState = "idle";
+                    }
                 }
-            } catch (e) {
-                console.error("Error al cargar de Firebase, usando respaldo local:", e);
-                ticketsState = JSON.parse(localStorage.getItem('jisthan_tickets')) || Array(totalTickets).fill('libre');
-                clientDataStore = JSON.parse(localStorage.getItem('jisthan_clients')) || {};
-            }
-            document.getElementById('admin-price-input').value = ticketPrice;
-            document.getElementById('admin-time-input').value = drawTime;
-            document.getElementById('display-ticket-price').innerText = `$${ticketPrice} MXN`;
-            document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
-            renderTickets();
+            });
         }
 
         async function saveDataToCloud() {
@@ -415,12 +420,11 @@
                     tickets: ticketsState,
                     clients: clientDataStore,
                     price: ticketPrice,
-                    time: drawTime
-                });
+                    time: drawTime,
+                    gameState: localGameState
+                }, { merge: true });
             } catch (e) {
                 console.error("Error al guardar en Firebase:", e);
-                localStorage.setItem('jisthan_tickets', JSON.stringify(ticketsState));
-                localStorage.setItem('jisthan_clients', JSON.stringify(clientDataStore));
             }
         }
 
@@ -641,6 +645,7 @@
             if (confirm('¿ADVERTENCIA: Purgar todos los registros de la nube y reiniciar base de datos?')) {
                 ticketsState = Array(totalTickets).fill('libre');
                 clientDataStore = {};
+                localGameState = "idle";
                 await saveDataToCloud();
                 selectedTickets = [];
                 renderTickets();
@@ -648,10 +653,23 @@
             }
         }
 
-        window.triggerRouletteFromAdmin = function() {
+        window.triggerRouletteFromAdmin = async function() {
+            let activeParticipants = [];
+            for (let i = 0; i < totalTickets; i++) {
+                if (ticketsState[i] === 'vendido') {
+                    activeParticipants.push(i);
+                }
+            }
+
+            if (activeParticipants.length === 0) {
+                alert('Error: No hay tokens VENDIDOS para iniciar el protocolo de sorteo.');
+                return;
+            }
+
             closeAdminModal();
-            document.getElementById('roulette-section').scrollIntoView({ behavior: 'smooth' });
-            spinWheel();
+            localGameState = "spinning";
+            // Actualizar Firestore para que todos los dispositivos disparen el evento "spinning"
+            await updateDoc(doc(db, "rifas", "Principal"), { gameState: "spinning" });
         }
 
         // Ruleta Cyberpunk
@@ -730,10 +748,7 @@
                 }
             }
 
-            if (activeParticipants.length === 0) {
-                alert('Error: No hay tokens VENDIDOS para iniciar el protocolo de sorteo.');
-                return;
-            }
+            if (activeParticipants.length === 0) return;
 
             isSpinning = true;
             document.getElementById('winner-announcement').classList.add('hidden');
@@ -779,8 +794,8 @@
             confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#ff00ff', '#00f3ff', '#39ff14', '#ffffff'] });
         }
 
-        // Carga inicial conectada a Cloud Firestore
-        loadDataFromCloud();
+        // Arrancar el sistema en tiempo real
+        initRealtimeListener();
         drawWheel(0, Array.from({length: 100}, (_, i) => i));
     </script>
 </body>
