@@ -3,50 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sorteos JISTHAN - Sorteos de Efectivo</title>
+    <title>Rifas JISTHAN - Sorteos en Vivo</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Inter & Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #fdfbf7; }
-        .ticket-btn { transition: all 0.2s ease; }
-        .ticket-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        
-        /* Luces de casino alrededor del acumulado */
-        @keyframes casino-lights {
-            0% { box-shadow: 0 0 0 4px #fbbf24, 0 0 15px #f59e0b, inset 0 0 10px rgba(251, 191, 36, 0.5); border-color: #d97706; }
-            50% { box-shadow: 0 0 0 6px #fef08a, 0 0 25px #fbbf24, inset 0 0 15px rgba(254, 240, 138, 0.8); border-color: #fbbf24; }
-            100% { box-shadow: 0 0 0 4px #fbbf24, 0 0 15px #f59e0b, inset 0 0 10px rgba(251, 191, 36, 0.5); border-color: #d97706; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0b1f52; /* Fondo azul tipo circo/noche */
+            background-image: radial-gradient(circle at top, #1e3a8a, #0b1f52 70%);
+            color: #333;
         }
-        .casino-marquee { animation: casino-lights 1.5s infinite alternate; }
+        h1, h2, h3, .circus-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        /* Luces de Casino (Acumulado) */
+        .neon-box {
+            border: 4px solid #fde047; /* Amarillo */
+            box-shadow: 0 0 15px rgba(253, 224, 71, 0.8), inset 0 0 15px rgba(253, 224, 71, 0.5);
+            border-radius: 9999px;
+            position: relative;
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(253, 224, 71, 0.9);
+        }
+        
+        /* Estilo Carpa Circo */
+        .circus-stripes-top {
+            background: repeating-linear-gradient(45deg, #e11d48, #e11d48 20px, #ffffff 20px, #ffffff 40px);
+        }
+        .circus-stripes-bottom {
+            background: repeating-linear-gradient(-45deg, #e11d48, #e11d48 20px, #ffffff 20px, #ffffff 40px);
+        }
+        
+        /* Texto "RIFAS JISTHAN" */
+        .title-rifas {
+            color: #fde047; /* Amarillo base */
+            text-shadow: 
+                -2px -2px 0 #b91c1c, 2px -2px 0 #b91c1c, 
+                -2px 2px 0 #b91c1c, 2px 2px 0 #b91c1c, 
+                0 6px 0 #991b1b, 0 10px 15px rgba(0,0,0,0.5);
+        }
+        
+        /* Animaciones para Botones */
+        .ticket-btn { transition: all 0.1s ease; }
+        .ticket-btn:active:not(:disabled) { transform: scale(0.95); }
     </style>
 </head>
-<body class="bg-gradient-to-b from-amber-50/50 via-rose-50/30 to-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between pb-24">
 
-    <!-- TOP BAR: ACUMULADO EN PREMIOS -->
-    <header class="bg-gradient-to-r from-red-700 via-rose-700 to-red-800 text-white shadow-lg sticky top-0 z-40 border-b-4 border-amber-400">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <div class="flex items-center space-x-3">
-                <div class="bg-amber-400 text-red-950 font-black px-3 py-1 rounded-lg text-sm tracking-wide shadow-inner border border-amber-200 animate-pulse">
-                    EN VIVO
-                </div>
-                <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2 drop-shadow">
-                    <i class="fa-solid fa-big-tent text-amber-300"></i> Sorteos JISTHAN
-                </h1>
+    <!-- HEADER: TÍTULO Y ACUMULADO -->
+    <header class="w-full pt-8 pb-4 px-4 text-center relative z-40">
+        <!-- Título Principal -->
+        <h1 class="text-5xl md:text-6xl font-black title-rifas mb-2 tracking-wide uppercase leading-none">
+            Rifas<br>
+            <span class="text-white text-3xl md:text-4xl bg-red-600 px-6 py-1 rounded-full inline-block mt-2 border-4 border-white shadow-xl" style="text-shadow: none;">
+                JISTHAN
+            </span>
+        </h1>
+
+        <!-- Contenedor del Acumulado -->
+        <div class="relative inline-block mt-6 w-full max-w-[90%] md:max-w-md mx-auto">
+            <!-- Etiqueta EN VIVO -->
+            <div class="absolute -top-4 left-4 bg-rose-600 text-white text-xs font-bold px-4 py-1.5 rounded-full border-2 border-white z-10 shadow-lg animate-pulse">
+                <i class="fa-solid fa-circle text-[8px] mr-1"></i> EN VIVO
             </div>
-            <!-- Acumulado con luces de casino -->
-            <div class="bg-red-950/90 border-2 border-amber-400 px-5 py-2 rounded-full flex items-center space-x-3 casino-marquee">
-                <span class="text-xs uppercase tracking-wider text-amber-300 font-bold">Acumulado Actual:</span>
-                <span id="top-accumulator" class="text-2xl font-black text-amber-300 drop-shadow">$0 MXN</span>
+            
+            <!-- Caja Acumulado (Luces) -->
+            <div class="neon-box bg-blue-950 py-3 px-4 flex flex-col items-center justify-center">
+                <span class="text-white text-xs md:text-sm font-bold tracking-widest mb-0.5">ACUMULADO ACTUAL:</span>
+                <span id="top-accumulator" class="text-4xl md:text-5xl font-black text-yellow-400 text-glow">$0 MXN</span>
             </div>
-            <div>
-                <button onclick="openAdminModal()" class="text-xs bg-red-900 hover:bg-red-950 text-amber-200 px-3 py-1.5 rounded-lg border border-amber-400/50 transition flex items-center gap-1.5 font-bold shadow">
+            
+            <!-- Botón Admin (Flotando abajo del acumulado) -->
+            <div class="absolute -bottom-5 left-1/2 transform -translate-x-1/2">
+                <button onclick="openAdminModal()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm px-6 py-2 rounded-full border-2 border-yellow-400 shadow-[0_4px_10px_rgba(0,0,0,0.5)] flex items-center gap-2 transition">
                     <i class="fa-solid fa-gear"></i> Admin
                 </button>
             </div>
@@ -54,212 +92,232 @@
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow w-full">
+    <main class="max-w-4xl mx-auto px-4 py-6 flex-grow w-full">
         
-        <!-- SORTEO ACTIVO INFO CARD -->
-        <section class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border-2 border-amber-200 p-6 mb-8 relative overflow-hidden">
-            <div class="absolute -right-10 -bottom-10 text-amber-100 opacity-50 text-9xl pointer-events-none">
-                <i class="fa-solid fa-ticket"></i>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center relative z-10">
-                <div class="md:col-span-2 space-y-3">
-                    <span class="inline-block bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-full text-xs border border-amber-300">
-                        Gran Sorteo Diario de Efectivo
-                    </span>
-                    <h2 id="display-prize-title" class="text-2xl sm:text-4xl font-black text-red-900">
-                        Premio del Día: En Base a Ventas
-                    </h2>
-                    <p class="text-slate-600 text-sm font-medium">
-                        Elige tus números de la suerte. Todo lo recaudado forma parte de la gran bolsa acumulada del día. ¡Pago directo y seguro!
-                    </p>
-                    <div class="flex flex-wrap items-center gap-4 text-sm pt-2">
-                        <div class="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-bold text-slate-700">
-                            Costo por boleto: <span id="display-ticket-price" class="text-emerald-700 font-extrabold">$50 MXN</span>
+        <!-- SORTEO ACTIVO INFO CARD (TIPO CARPA DE CIRCO) -->
+        <section class="bg-[#fdf8ed] rounded-2xl shadow-2xl border-4 border-yellow-400 relative overflow-hidden mb-10">
+            <!-- Rayas arriba -->
+            <div class="h-6 w-full circus-stripes-top border-b-4 border-yellow-400"></div>
+            
+            <div class="p-6 md:p-8 text-center relative z-10">
+                <span class="inline-block bg-yellow-100 text-yellow-900 font-bold px-5 py-2 rounded-full text-xs md:text-sm border-2 border-yellow-300 mb-6 shadow-sm">
+                    🎪 Gran Sorteo Diario de Efectivo
+                </span>
+                
+                <h2 id="display-prize-title" class="text-3xl md:text-5xl font-black text-red-600 mb-8 leading-tight drop-shadow-sm" style="text-shadow: 2px 2px 0px #fde047;">
+                    Premio Acumulado:<br>
+                    <span class="text-yellow-500 drop-shadow-md">☆</span>
+                    En Base a Ventas
+                    <span class="text-yellow-500 drop-shadow-md">☆</span>
+                </h2>
+                
+                <!-- Detalles: Costo y Horario -->
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
+                    <div class="bg-yellow-50 border-2 border-yellow-300 px-6 py-2 rounded-full font-bold text-slate-800 flex items-center gap-3 shadow-sm w-full sm:w-auto">
+                        <i class="fa-solid fa-ticket text-rose-500 text-xl"></i>
+                        <div class="text-left">
+                            <span class="text-[10px] uppercase text-slate-500 block leading-none">Costo por boleto:</span>
+                            <span id="display-ticket-price" class="text-emerald-700 text-xl font-black leading-none block mt-1">$50 MXN</span>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-bold text-slate-700">
-                            Horario del Sorteo: <span id="display-draw-time" class="text-red-700 font-extrabold">21:00 hrs</span>
+                    </div>
+                    <div class="bg-yellow-50 border-2 border-yellow-300 px-6 py-2 rounded-full font-bold text-slate-800 flex items-center gap-3 shadow-sm w-full sm:w-auto">
+                        <i class="fa-regular fa-clock text-rose-500 text-xl"></i>
+                        <div class="text-left">
+                            <span class="text-[10px] uppercase text-slate-500 block leading-none">Horario del Sorteo:</span>
+                            <span id="display-draw-time" class="text-red-700 text-xl font-black leading-none block mt-1">21:00 hrs</span>
                         </div>
                     </div>
                 </div>
-                <div class="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300 rounded-2xl p-5 text-center flex flex-col justify-center items-center shadow-inner">
-                    <span class="text-xs uppercase tracking-wider font-extrabold text-amber-800 mb-1">Boletos Disponibles</span>
-                    <div id="stats-available" class="text-3xl font-black text-red-700 mb-3">100 / 100</div>
-                    <a href="#tickets-section" class="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition text-sm">
-                        Elegir Mis Números
-                    </a>
+                
+                <!-- Boletos Disponibles -->
+                <div class="border-2 border-red-500 rounded-2xl p-4 bg-white shadow-inner relative max-w-sm mx-auto">
+                    <span class="text-xs uppercase font-black text-blue-900 mb-1 block tracking-wider">Boletos Disponibles</span>
+                    <div class="flex justify-center items-center gap-6 mt-2">
+                        <i class="fa-solid fa-star text-yellow-400 text-2xl"></i>
+                        <div id="stats-available" class="text-5xl font-black text-red-600 tracking-tighter">100 / 100</div>
+                        <i class="fa-solid fa-star text-yellow-400 text-2xl"></i>
+                    </div>
                 </div>
             </div>
+
+            <!-- Rayas abajo -->
+            <div class="h-6 w-full circus-stripes-bottom border-t-4 border-yellow-400"></div>
         </section>
 
         <!-- SECCIÓN DE BOLETOS -->
-        <section id="tickets-section" class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border-2 border-amber-200 p-6 mb-12">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <section id="tickets-section" class="bg-[#fdf8ed] rounded-3xl shadow-xl border-4 border-yellow-400 p-6 mb-12">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 border-b-2 border-yellow-200 pb-4">
                 <div>
-                    <h3 class="text-xl font-black text-red-900">Selecciona tus Boletos</h3>
-                    <p class="text-xs text-slate-500">Haz clic en los números que deseas apartar (00 al 99)</p>
+                    <h3 class="text-2xl font-black text-red-700 circus-font">Selecciona tus Números</h3>
                 </div>
                 <!-- Leyenda de Estados -->
-                <div class="flex items-center gap-4 text-xs font-bold">
-                    <div class="flex items-center gap-1.5 text-emerald-700">
-                        <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block shadow-sm"></span> Libre
+                <div class="flex items-center gap-4 text-xs font-bold bg-white px-4 py-2 rounded-full border border-yellow-300 shadow-sm">
+                    <div class="flex items-center gap-1.5 text-slate-700">
+                        <span class="w-3 h-3 rounded-full bg-white border border-slate-300 shadow-sm"></span> Libre
                     </div>
-                    <div class="flex items-center gap-1.5 text-amber-700">
-                        <span class="w-3 h-3 rounded-full bg-amber-400 inline-block shadow-sm"></span> Apartado
+                    <div class="flex items-center gap-1.5 text-yellow-700">
+                        <span class="w-3 h-3 rounded-full bg-yellow-400 shadow-sm"></span> Apartado
                     </div>
-                    <div class="flex items-center gap-1.5 text-rose-700">
-                        <span class="w-3 h-3 rounded-full bg-rose-500 inline-block shadow-sm"></span> Vendido
+                    <div class="flex items-center gap-1.5 text-red-700">
+                        <span class="w-3 h-3 rounded-full bg-red-600 shadow-sm"></span> Vendido
                     </div>
                 </div>
             </div>
 
             <!-- CUADRÍCULA DE BOLETOS -->
-            <div id="tickets-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2.5 max-h-[420px] overflow-y-auto p-2 border border-amber-100 rounded-2xl bg-amber-50/30">
+            <div id="tickets-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2.5 max-h-[420px] overflow-y-auto p-3 border-2 border-yellow-200 rounded-2xl bg-yellow-50/50">
                 <!-- Generado por JavaScript -->
             </div>
         </section>
 
         <!-- SECCIÓN DE RULETA / SORTEO EN VIVO -->
-        <section id="roulette-section" class="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl border-2 border-amber-200 p-6 mb-12 text-center">
-            <h3 class="text-xl font-black text-red-900 mb-1">Tómbola Virtual en Vivo</h3>
-            <p class="text-xs text-slate-500 mb-6">El sorteo oficial se realiza en exclusiva desde el panel de administración.</p>
+        <section id="roulette-section" class="bg-[#fdf8ed] rounded-3xl shadow-xl border-4 border-yellow-400 p-6 mb-12 text-center">
+            <h3 class="text-2xl font-black text-red-700 mb-2 circus-font">Tómbola Virtual en Vivo</h3>
+            <p class="text-sm font-bold text-slate-500 mb-6">El sorteo oficial se realiza exclusivamente por el Administrador.</p>
             
-            <div class="relative max-w-md mx-auto aspect-square flex items-center justify-center bg-gradient-to-b from-red-950 to-slate-900 rounded-full shadow-2xl p-4 border-8 border-amber-400">
+            <div class="relative max-w-md mx-auto aspect-square flex items-center justify-center bg-blue-950 rounded-full shadow-2xl p-4 border-8 border-yellow-400 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
                 <!-- Indicador Superior -->
-                <div class="absolute top-0 z-20 w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-amber-300 filter drop-shadow-md"></div>
+                <div class="absolute top-0 z-20 w-0 h-0 border-l-[16px] border-l-transparent border-r-[16px] border-r-transparent border-t-[28px] border-t-yellow-300 filter drop-shadow-lg"></div>
                 
                 <canvas id="wheelCanvas" width="350" height="350" class="w-full h-full rounded-full"></canvas>
             </div>
 
-            <div class="mt-6">
-                <div id="winner-announcement" class="hidden text-2xl font-black text-red-700 bg-amber-100 py-4 px-8 rounded-2xl border-2 border-amber-400 inline-block shadow-lg animate-bounce">
-                    🎉 ¡Ganador: <span id="winner-name-display" class="text-emerald-700">--</span> (Boleto: <span id="winner-number">--</span>)! 🎉
+            <div class="mt-8">
+                <div id="winner-announcement" class="hidden text-2xl md:text-3xl font-black text-red-700 bg-yellow-100 py-4 px-8 rounded-2xl border-4 border-yellow-400 inline-block shadow-xl animate-bounce">
+                    🎉 ¡Ganador: <span id="winner-name-display" class="text-emerald-700">--</span> <br><span class="text-lg text-slate-700 block mt-1">(Boleto: <span id="winner-number" class="text-blue-700">--</span>)</span> 🎉
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- FOOTER FLOTANTE DE SELECCIÓN -->
-    <div id="floating-cart" class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-amber-300 p-4 shadow-2xl transform translate-y-full transition-transform duration-300 z-30">
+    <!-- FOOTER FLOTANTE DE SELECCIÓN (COLOR SÓLIDO Y ALTO CONTRASTE) -->
+    <div id="floating-cart" class="fixed bottom-0 left-0 right-0 bg-blue-950 border-t-4 border-yellow-400 p-4 shadow-[0_-10px_30px_rgba(0,0,0,0.8)] transform translate-y-full transition-transform duration-300 z-50">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="text-sm font-medium">
-                Has seleccionado <span id="selected-count" class="font-black text-red-600">0</span> boletos. 
-                Total a pagar: <span id="selected-total" class="font-black text-slate-900 text-lg">$0 MXN</span>
+            <div class="text-sm font-medium text-white">
+                Has seleccionado <span id="selected-count" class="font-black text-yellow-400 text-xl">0</span> boletos. 
+                <span class="hidden sm:inline">|</span> 
+                Total: <span id="selected-total" class="font-black text-yellow-400 text-2xl">$0 MXN</span>
             </div>
-            <button onclick="openCustomerModal()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-ticket"></i> Apartar Boletos
+            <!-- BOTÓN APARTAR BOLETOS TOTALMENTE VISIBLE (VERDE SÓLIDO) -->
+            <button onclick="openCustomerModal()" class="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-black px-8 py-3 rounded-full shadow-[0_4px_0_rgb(22,101,52)] transition flex items-center justify-center gap-2 border-2 border-green-300 text-lg uppercase tracking-wide">
+                <i class="fa-solid fa-ticket text-xl"></i> APARTAR BOLETOS
             </button>
         </div>
     </div>
 
     <!-- FOOTER -->
-    <footer class="bg-red-950 text-amber-200/80 py-6 text-center text-xs mt-12 border-t-4 border-amber-400">
-        <p>&copy; 2026 Sorteos JISTHAN. Todos los derechos reservados. Pagos seguros y verificados.</p>
+    <footer class="bg-blue-950 text-blue-200/50 py-6 text-center text-xs border-t-2 border-blue-900 mt-auto">
+        <p>&copy; 2026 Rifas JISTHAN. Todos los derechos reservados. Pagos seguros.</p>
     </footer>
 
     <!-- MODAL 1: DATOS DEL CLIENTE -->
-    <div id="customer-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-amber-300">
-            <h3 class="text-lg font-black text-red-900 mb-1">Completa tus Datos</h3>
-            <p class="text-xs text-slate-500 mb-4">Ingresa tu nombre y WhatsApp para enviarte tu comprobante y confirmación.</p>
+    <div id="customer-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#fdf8ed] rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-yellow-400">
+            <h3 class="text-xl font-black text-red-700 mb-1 circus-font">Tus Datos</h3>
+            <p class="text-xs font-bold text-slate-500 mb-4">Ingresa tu nombre y WhatsApp para asegurar tus boletos.</p>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Nombre Completo</label>
-                    <input type="text" id="client-name" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-amber-500" placeholder="Ej. Juan Pérez">
+                    <label class="block text-xs font-black text-slate-700 mb-1 uppercase">Nombre Completo</label>
+                    <input type="text" id="client-name" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold focus:outline-none focus:border-red-500 text-slate-800" placeholder="Ej. Juan Pérez">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Número de WhatsApp</label>
-                    <input type="tel" id="client-whatsapp" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-amber-500" placeholder="Ej. 5512345678">
+                    <label class="block text-xs font-black text-slate-700 mb-1 uppercase">Número de WhatsApp</label>
+                    <input type="tel" id="client-whatsapp" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold focus:outline-none focus:border-red-500 text-slate-800" placeholder="Ej. 5512345678">
                 </div>
             </div>
 
             <div class="mt-6 flex justify-end gap-3">
-                <button onclick="closeCustomerModal()" class="px-4 py-2 text-slate-600 text-sm font-semibold hover:bg-slate-100 rounded-xl">Cancelar</button>
-                <button onclick="proceedToPayment()" class="px-5 py-2 bg-gradient-to-r from-red-600 to-rose-600 text-white text-sm font-bold rounded-xl shadow">Continuar al Pago</button>
+                <button onclick="closeCustomerModal()" class="px-5 py-3 text-slate-500 text-sm font-black hover:bg-slate-200 rounded-xl uppercase">Cancelar</button>
+                <!-- BOTÓN CONTINUAR (VERDE SÓLIDO) -->
+                <button onclick="proceedToPayment()" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-black rounded-xl shadow-lg border border-green-800 uppercase">
+                    Continuar al Pago
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 2: MÉTODO DE PAGO (SOLO MERCADO PAGO) -->
-    <div id="payment-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-amber-300 text-center">
-            <h3 class="text-lg font-black text-red-900 mb-1">Pago en Línea</h3>
-            <p class="text-xs text-slate-500 mb-6">Realiza tu pago seguro a través de Mercado Pago para asegurar tus boletos.</p>
+    <!-- MODAL 2: MÉTODO DE PAGO (BOTÓN SUPER VISIBLE) -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-[#fdf8ed] rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-yellow-400 text-center">
+            <h3 class="text-2xl font-black text-red-700 mb-1 circus-font">Pago en Línea</h3>
+            <p class="text-sm font-bold text-slate-600 mb-6">Realiza tu pago seguro para confirmar tus boletos.</p>
             
             <div class="space-y-3 mb-6">
-                <button onclick="payWithMercadoPago()" class="w-full flex items-center justify-between p-4 border-2 border-blue-200 hover:border-blue-500 bg-blue-50/50 rounded-2xl transition group text-left shadow-sm">
+                <!-- BOTÓN MERCADO PAGO AZUL SÓLIDO -->
+                <button onclick="payWithMercadoPago()" class="w-full flex items-center justify-between p-4 border-4 border-blue-400 bg-blue-500 hover:bg-blue-600 rounded-2xl transition group text-left shadow-[0_4px_0_rgb(30,58,138)] active:translate-y-1 active:shadow-none">
                     <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xl shadow">
+                        <div class="w-12 h-12 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold text-2xl shadow">
                             <i class="fa-solid fa-credit-card"></i>
                         </div>
                         <div>
-                            <div class="font-black text-sm text-slate-900 group-hover:text-blue-600">Pagar con Mercado Pago</div>
-                            <div class="text-xs text-slate-500">Tarjetas, Meses o Dinero en cuenta</div>
+                            <div class="font-black text-xl text-white">Mercado Pago</div>
+                            <div class="text-xs text-blue-100 font-bold uppercase">Pago 100% Seguro</div>
                         </div>
                     </div>
-                    <i class="fa-solid fa-chevron-right text-blue-500 text-xs font-bold"></i>
+                    <i class="fa-solid fa-chevron-right text-white text-xl font-black"></i>
                 </button>
             </div>
 
-            <button onclick="closePaymentModal()" class="w-full py-2 text-slate-600 text-sm font-semibold hover:bg-slate-100 rounded-xl">Regresar</button>
+            <button onclick="closePaymentModal()" class="w-full py-3 text-slate-500 text-sm font-black hover:bg-slate-200 rounded-xl uppercase">Regresar</button>
         </div>
     </div>
 
     <!-- MODAL 4: PANEL DE ADMINISTRADOR -->
-    <div id="admin-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-2 border-amber-300 max-h-[90vh] overflow-y-auto">
+    <div id="admin-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-4 border-yellow-400 max-h-[90vh] overflow-y-auto">
             <div id="admin-login-view">
-                <h3 class="text-lg font-black text-red-900 mb-1">Panel de Administrador</h3>
-                <p class="text-xs text-slate-500 mb-4">Ingresa tu PIN de seguridad</p>
-                <input type="password" id="admin-pin" class="w-full px-3 py-2 border-2 border-slate-300 rounded-xl text-sm mb-4 text-center tracking-widest font-black text-lg" placeholder="••••">
+                <h3 class="text-xl font-black text-red-700 mb-1 circus-font">Acceso Admin</h3>
+                <p class="text-sm font-bold text-slate-500 mb-4">Ingresa el PIN de seguridad</p>
+                <input type="password" id="admin-pin" class="w-full px-4 py-3 border-2 border-slate-300 rounded-xl text-sm mb-4 text-center tracking-widest font-black text-2xl focus:border-red-500 focus:outline-none" placeholder="••••">
                 <div class="flex justify-end gap-3">
-                    <button onclick="closeAdminModal()" class="px-4 py-2 text-slate-600 text-sm font-semibold hover:bg-slate-100 rounded-xl">Cancelar</button>
-                    <button onclick="verifyAdminPin()" class="px-5 py-2 bg-red-900 hover:bg-red-950 text-white text-sm font-bold rounded-xl shadow">Ingresar</button>
+                    <button onclick="closeAdminModal()" class="px-5 py-2 text-slate-500 font-black hover:bg-slate-100 rounded-xl">Cancelar</button>
+                    <button onclick="verifyAdminPin()" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl shadow">Ingresar</button>
                 </div>
             </div>
 
             <div id="admin-dashboard-view" class="hidden space-y-4">
                 <div class="flex justify-between items-center border-b pb-3">
-                    <h3 class="text-lg font-black text-red-900">Configuración y Gestión</h3>
-                    <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+                    <h3 class="text-lg font-black text-slate-800">Panel de Control</h3>
+                    <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-600 text-2xl"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 
                 <div class="space-y-3 text-xs">
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Precio por Boleto ($ MXN)</label>
-                            <input type="number" id="admin-price-input" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl font-bold" value="50">
+                            <label class="block font-black text-slate-700 mb-1">Precio por Boleto ($)</label>
+                            <input type="number" id="admin-price-input" class="w-full px-3 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold" value="50">
                         </div>
                         <div>
-                            <label class="block font-bold text-slate-700 mb-1">Horario del Sorteo</label>
-                            <input type="time" id="admin-time-input" class="w-full px-3 py-2 border-2 border-slate-200 rounded-xl font-bold" value="21:00">
+                            <label class="block font-black text-slate-700 mb-1">Horario Sorteo</label>
+                            <input type="time" id="admin-time-input" class="w-full px-3 py-2 bg-slate-50 border-2 border-slate-200 rounded-xl font-bold" value="21:00">
                         </div>
                     </div>
                 </div>
 
-                <!-- Gestor de Comprobantes y Boletos Vendidos -->
+                <!-- Gestor de Boletos Vendidos -->
                 <div class="border-t pt-3">
                     <h4 class="font-black text-slate-800 mb-2 flex items-center justify-between">
-                        <span>Gestión de Boletos Apartados / Comprobantes</span>
-                        <span id="admin-apartados-count" class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full">0 apartados</span>
+                        <span>Boletos Apartados (Pendientes)</span>
+                        <span id="admin-apartados-count" class="bg-yellow-100 text-yellow-800 text-[10px] px-2 py-0.5 rounded-full font-bold">0 apartados</span>
                     </h4>
                     <div id="admin-apartados-list" class="max-h-40 overflow-y-auto space-y-2 border-2 border-slate-100 p-2 rounded-2xl bg-slate-50">
                         <!-- Rellenado por JS -->
-                        <p class="text-slate-400 text-center py-4">No hay boletos apartados pendientes.</p>
                     </div>
                 </div>
 
                 <div class="pt-2 border-t flex flex-col gap-2">
-                    <button onclick="saveAdminSettings()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow">
-                        Guardar Cambios Generales
+                    <button onclick="saveAdminSettings()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl text-sm shadow">
+                        Guardar Ajustes
                     </button>
-                    <!-- Único acceso a la ruleta -->
-                    <button onclick="triggerRouletteFromAdmin()" class="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-950 font-black py-3 rounded-xl text-sm shadow-md flex items-center justify-center gap-2 border border-amber-300">
-                        <i class="fa-solid fa-trophy"></i> Iniciar Sorteo en Vivo (Girar Ruleta)
+                    <!-- Iniciar Sorteo -->
+                    <button onclick="triggerRouletteFromAdmin()" class="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-black py-4 rounded-xl text-base shadow-lg border-2 border-yellow-500 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-trophy"></i> GIRAR RULETA AHORA
                     </button>
-                    <button onclick="resetTicketsGrid()" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-2.5 rounded-xl text-xs border border-rose-200">
-                        Reiniciar Todos los Boletos (Nuevo Día)
+                    <!-- Reiniciar Día -->
+                    <button onclick="resetTicketsGrid()" class="w-full bg-red-100 hover:bg-red-200 text-red-700 font-black py-3 rounded-xl text-xs border border-red-200 mt-2">
+                        <i class="fa-solid fa-trash mr-1"></i> Borrar Todo (Nuevo Día)
                     </button>
                 </div>
             </div>
@@ -283,20 +341,15 @@
 
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
-      console.log("Firebase inicializado correctamente para Sorteos JISTHAN");
     </script>
 
     <!-- LÓGICA DE LA APLICACIÓN -->
     <script>
         let totalTickets = 100;
-        // Reiniciar boletos libres por defecto diariamente al cargar si no hay sesión activa o limpiar
         let ticketsState = JSON.parse(localStorage.getItem('jisthan_tickets')) || Array(totalTickets).fill('libre');
-        let clientDataStore = JSON.parse(localStorage.getItem('jisthan_clients')) || {}; // { index: { name, whatsapp } }
+        let clientDataStore = JSON.parse(localStorage.getItem('jisthan_clients')) || {}; 
         let selectedTickets = [];
         let ticketPrice = 50;
-
-        // Simulador de usuarios conectados en vivo (número aleatorio realista entre 8 y 25)
-        let activeUsersOnPage = Math.floor(Math.random() * 18) + 8;
 
         // Inicializar Cuadrícula
         function renderTickets() {
@@ -314,20 +367,20 @@
                 }
 
                 const btn = document.createElement('button');
-                btn.className = `ticket-btn py-2.5 rounded-xl font-black text-xs sm:text-sm border-2 transition flex items-center justify-center shadow-xs `;
+                btn.className = `ticket-btn py-3 rounded-xl font-black text-sm md:text-base border-2 shadow-sm flex items-center justify-center uppercase `;
                 
                 if (state === 'libre') {
                     if (selectedTickets.includes(i)) {
-                        btn.className += `bg-blue-600 text-white border-blue-600 ring-4 ring-blue-200`;
+                        btn.className += `bg-green-500 text-white border-green-700 shadow-[inset_0_-3px_0_rgba(0,0,0,0.2)]`;
                     } else {
-                        btn.className += `bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100`;
+                        btn.className += `bg-white text-slate-700 border-slate-300 hover:border-yellow-400 hover:bg-yellow-50 hover:-translate-y-1`;
                     }
                     btn.onclick = () => toggleTicketSelection(i);
                 } else if (state === 'apartado') {
-                    btn.className += `bg-amber-100 text-amber-900 border-amber-300 cursor-not-allowed opacity-90`;
+                    btn.className += `bg-yellow-400 text-yellow-900 border-yellow-500 cursor-not-allowed opacity-90`;
                     btn.disabled = true;
                 } else {
-                    btn.className += `bg-rose-100 text-rose-900 border-rose-300 cursor-not-allowed opacity-90`;
+                    btn.className += `bg-red-600 text-white border-red-800 cursor-not-allowed opacity-90 shadow-inner`;
                     btn.disabled = true;
                 }
 
@@ -337,7 +390,7 @@
 
             document.getElementById('stats-available').innerText = `${availableCount} / ${totalTickets}`;
             document.getElementById('top-accumulator').innerText = `$${totalAccumulated} MXN`;
-            document.getElementById('display-prize-title').innerText = `Premio Acumulado: $${totalAccumulated} en Efectivo`;
+            document.getElementById('display-prize-title').innerHTML = `Premio Acumulado:<br><span class="text-yellow-500 drop-shadow-md">☆</span> $${totalAccumulated} en Efectivo <span class="text-yellow-500 drop-shadow-md">☆</span>`;
             updateCartBar();
             renderAdminApartadosList();
         }
@@ -367,7 +420,7 @@
             }
         }
 
-        // Modales de Cliente y Pago
+        // Modales
         function openCustomerModal() {
             if (selectedTickets.length === 0) return;
             document.getElementById('customer-modal').classList.remove('hidden');
@@ -384,7 +437,7 @@
             const wats = document.getElementById('client-whatsapp').value.trim();
 
             if (!name || !wats) {
-                alert('Por favor ingresa tu nombre y WhatsApp.');
+                alert('Por favor, ingresa tu nombre y WhatsApp para continuar.');
                 return;
             }
 
@@ -415,7 +468,7 @@
             window.location.href = 'https://mpago.la/1AbhKAz';
         }
 
-        // Admin Panel & Gestión
+        // Admin Panel
         function openAdminModal() {
             document.getElementById('admin-modal').classList.remove('hidden');
             document.getElementById('admin-modal').classList.add('flex');
@@ -436,7 +489,7 @@
                 document.getElementById('admin-dashboard-view').classList.remove('hidden');
                 renderAdminApartadosList();
             } else {
-                alert('PIN Incorrecto');
+                alert('PIN de Administrador Incorrecto');
             }
         }
 
@@ -453,23 +506,23 @@
                     const numStr = String(i).padStart(2, '0');
                     
                     const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between bg-white p-2.5 rounded-xl border border-amber-200 text-xs shadow-xs';
+                    div.className = 'flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200 text-xs shadow-sm';
                     div.innerHTML = `
                         <div>
-                            <span class="font-black text-amber-800">#${numStr}</span> - <span class="font-bold text-slate-800">${client.name}</span>
-                            <div class="text-[10px] text-slate-500">WhatsApp: ${client.whatsapp}</div>
+                            <span class="font-black text-slate-800 text-sm">#${numStr}</span> - <span class="font-bold text-slate-700">${client.name}</span>
+                            <div class="text-[10px] text-slate-400 font-bold">Wa: ${client.whatsapp}</div>
                         </div>
-                        <button onclick="markAsSold(${i})" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-bold shadow-xs">
-                            Marcar Vendido
+                        <button onclick="markAsSold(${i})" class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg font-black shadow-sm uppercase text-[10px]">
+                            Vendido
                         </button>
                     `;
                     listContainer.appendChild(div);
                 }
             }
 
-            countBadge.innerText = `${apartadosCount} apartados`;
+            countBadge.innerText = `${apartadosCount} pendientes`;
             if (apartadosCount === 0) {
-                listContainer.innerHTML = `<p class="text-slate-400 text-center py-4">No hay boletos apartados pendientes de pago.</p>`;
+                listContainer.innerHTML = `<p class="text-slate-400 text-center py-4 font-bold text-xs uppercase">Sin apartados pendientes</p>`;
             }
         }
 
@@ -488,20 +541,20 @@
             document.getElementById('display-draw-time').innerText = `${time} hrs`;
             ticketPrice = price;
 
-            alert('Configuración guardada con éxito.');
+            alert('Configuración guardada.');
             closeAdminModal();
             renderTickets();
         }
 
         function resetTicketsGrid() {
-            if (confirm('¿Estás seguro de reiniciar todos los boletos a libres para un nuevo día?')) {
+            if (confirm('PELIGRO: ¿Estás seguro de BORRAR TODOS los boletos y empezar un nuevo día?')) {
                 ticketsState = Array(totalTickets).fill('libre');
                 clientDataStore = {};
                 localStorage.removeItem('jisthan_tickets');
                 localStorage.removeItem('jisthan_clients');
                 selectedTickets = [];
                 renderTickets();
-                alert('Cuadrícula reiniciada para el nuevo día.');
+                alert('Todo reiniciado correctamente.');
             }
         }
 
@@ -511,7 +564,7 @@
             spinWheel();
         }
 
-        // Ruleta con física adaptada solo a boletos vendidos
+        // Ruleta
         const canvas = document.getElementById('wheelCanvas');
         const ctx = canvas.getContext('2d');
         let currentAngle = 0;
@@ -533,32 +586,33 @@
                 ctx.arc(center, center, radius, angle + i * sliceAngle, angle + (i + 1) * sliceAngle);
                 ctx.closePath();
 
-                ctx.fillStyle = i % 2 === 0 ? '#991b1b' : '#1e293b';
+                // Colores tipo circo (Rojo y Crema)
+                ctx.fillStyle = i % 2 === 0 ? '#dc2626' : '#fef08a';
                 ctx.fill();
-                ctx.strokeStyle = '#fbbf24';
+                ctx.strokeStyle = '#f59e0b';
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Texto del número participante
+                // Texto
                 ctx.save();
                 ctx.translate(center, center);
                 ctx.rotate(angle + i * sliceAngle + sliceAngle / 2);
                 ctx.textAlign = 'right';
-                ctx.fillStyle = '#fef08a';
-                ctx.font = 'bold 12px Inter';
+                ctx.fillStyle = i % 2 === 0 ? '#ffffff' : '#991b1b';
+                ctx.font = '900 14px Montserrat';
                 const label = participants.length > 0 ? String(participants[i]).padStart(2, '0') : '--';
-                ctx.fillText(label, radius - 20, 4);
+                ctx.fillText(label, radius - 20, 5);
                 ctx.restore();
                 ctx.restore();
             }
 
-            // Centro de la ruleta
+            // Centro
             ctx.beginPath();
-            ctx.arc(center, center, 40, 0, 2 * Math.PI);
-            ctx.fillStyle = '#450a0a';
+            ctx.arc(center, center, 35, 0, 2 * Math.PI);
+            ctx.fillStyle = '#1e3a8a';
             ctx.fill();
-            ctx.lineWidth = 4;
-            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#fde047';
             ctx.stroke();
         }
 
@@ -567,8 +621,8 @@
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
                 gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
                 osc.connect(gain);
@@ -581,7 +635,6 @@
         function spinWheel() {
             if (isSpinning) return;
 
-            // Filtrar boletos estrictamente vendidos
             activeParticipants = [];
             for (let i = 0; i < totalTickets; i++) {
                 if (ticketsState[i] === 'vendido') {
@@ -590,24 +643,19 @@
             }
 
             if (activeParticipants.length === 0) {
-                alert('No hay boletos pagados y vendidos para realizar el sorteo.');
+                alert('No hay boletos VENDIDOS para realizar el sorteo.');
                 return;
             }
 
             isSpinning = true;
             document.getElementById('winner-announcement').classList.add('hidden');
 
-            // Mostrar usuarios conectados al momento de girar
-            console.log(`Usuarios en la página al girar la ruleta: ${activeUsersOnPage}`);
-
             let spinTime = 0;
             let spinTimeTotal = 8000;
             let startAngle = currentAngle;
             let targetAngle = currentAngle + Math.PI * 2 * 12 + Math.random() * Math.PI * 2;
 
-            function easeOutCubic(t) {
-                return (--t) * t * t + 1;
-            }
+            function easeOutCubic(t) { return (--t) * t * t + 1; }
 
             function animateSpin() {
                 spinTime += 40;
@@ -644,11 +692,7 @@
             document.getElementById('winner-name-display').innerText = clientInfo.name;
             document.getElementById('winner-announcement').classList.remove('hidden');
 
-            confetti({
-                particleCount: 150,
-                spread: 90,
-                origin: { y: 0.7 }
-            });
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#dc2626', '#fde047', '#1e3a8a'] });
         }
 
         // Carga inicial
