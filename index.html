@@ -9,100 +9,118 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Lilita One (Circo) & Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Orbitron (Neon) & Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body { 
             font-family: 'Montserrat', sans-serif; 
-            background-color: #05103a; /* Fondo azul noche profundo */
-            background-image: radial-gradient(circle at top, #112d8a 0%, #05103a 60%);
-            color: #333;
+            background-color: #050505;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: #fff;
         }
-        .circus-font {
-            font-family: 'Lilita One', cursive;
+        .neon-font {
+            font-family: 'Orbitron', sans-serif;
         }
         
-        /* Título Principal 3D */
+        /* Efectos Neón de Textos */
+        .neon-text-cyan {
+            color: #00f3ff;
+            text-shadow: 0 0 5px rgba(0,243,255,0.5), 0 0 10px rgba(0,243,255,0.8), 0 0 20px #00f3ff;
+        }
+        .neon-text-magenta {
+            color: #ff00ff;
+            text-shadow: 0 0 5px rgba(255,0,255,0.5), 0 0 10px rgba(255,0,255,0.8), 0 0 20px #ff00ff;
+        }
+        .neon-text-green {
+            color: #39ff14;
+            text-shadow: 0 0 5px rgba(57,255,20,0.5), 0 0 10px rgba(57,255,20,0.8), 0 0 20px #39ff14;
+        }
+        
+        /* Título Principal */
         .title-rifas {
-            color: #ffde00; /* Amarillo */
-            -webkit-text-stroke: 1.5px #4a0000;
-            text-shadow: 
-                0px 5px 0px #041144, 
-                0px 8px 15px rgba(0,0,0,0.6);
+            color: #fff;
+            text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff, 0 0 40px #00f3ff, 0 0 80px #00f3ff;
         }
         
-        /* Letrero JISTHAN */
-        .ribbon-jisthan {
-            background-color: #d92228;
-            box-shadow: 0 4px 0 #7a0b10;
+        /* Cajas Neón */
+        .neon-box-cyan {
+            border: 2px solid #00f3ff;
+            box-shadow: 0 0 15px rgba(0,243,255,0.4), inset 0 0 15px rgba(0,243,255,0.2);
+            background: rgba(0, 15, 20, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        .neon-box-magenta {
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 15px rgba(255,0,255,0.4), inset 0 0 15px rgba(255,0,255,0.2);
+            background: rgba(20, 0, 20, 0.8);
+            backdrop-filter: blur(5px);
         }
 
-        /* Acumulado Luces */
-        .neon-box {
-            border: 4px solid #ffde00;
-            box-shadow: 0 0 15px rgba(255, 222, 0, 0.6), inset 0 0 10px rgba(255, 222, 0, 0.3);
+        /* Inputs Neón */
+        .neon-input {
+            background-color: rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            color: #00f3ff;
+            transition: all 0.3s ease;
         }
-
-        /* Toldo Circo Rayas */
-        .toldo-rayas {
-            background: repeating-linear-gradient(
-                45deg,
-                #d92228,
-                #d92228 20px,
-                #ffffff 20px,
-                #ffffff 40px
-            );
-        }
-
-        /* Texto Premio (Contorno Amarillo) */
-        .premio-text {
-            -webkit-text-stroke: 1px #ffde00;
+        .neon-input:focus {
+            border-color: #00f3ff;
+            box-shadow: 0 0 10px rgba(0,243,255,0.5);
+            outline: none;
         }
 
         /* Animación Botones Boletos */
-        .ticket-btn { transition: all 0.1s ease; }
+        .ticket-btn { transition: all 0.2s ease; }
         .ticket-btn:active:not(:disabled) { transform: scale(0.92); }
+        .ticket-btn:hover:not(:disabled) { transform: translateY(-2px); }
+        
+        /* Scrollbar oscura */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00f3ff; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between pb-28">
 
     <!-- HEADER: TÍTULO Y ACUMULADO -->
-    <header class="w-full pt-8 pb-4 px-4 text-center relative z-40">
+    <header class="w-full pt-10 pb-4 px-4 text-center relative z-40">
         <!-- Título Principal -->
-        <h1 class="text-6xl md:text-7xl font-normal circus-font title-rifas leading-none tracking-wide mb-1">
+        <h1 class="text-6xl md:text-7xl font-black neon-font title-rifas leading-none tracking-widest mb-1">
             RIFAS
         </h1>
-        <div class="inline-block relative -mt-3">
-            <span class="text-white text-3xl md:text-4xl circus-font ribbon-jisthan px-6 py-1 rounded-lg inline-block border-2 border-white tracking-widest relative z-10">
+        <div class="inline-block relative -mt-2">
+            <span class="text-black bg-[#ff00ff] text-2xl md:text-3xl neon-font px-6 py-1 rounded-sm inline-block tracking-[0.2em] relative z-10 box-shadow-[0_0_15px_#ff00ff] border border-white">
                 JISTHAN
             </span>
-            <!-- Estrellas flotantes título -->
-            <i class="fa-solid fa-star absolute -left-6 top-2 text-yellow-400 text-xl drop-shadow-md"></i>
-            <i class="fa-solid fa-star absolute -right-6 top-2 text-yellow-400 text-xl drop-shadow-md"></i>
+            <!-- Estrellas/Rayos flotantes título -->
+            <i class="fa-solid fa-bolt absolute -left-8 top-1 neon-text-cyan text-2xl"></i>
+            <i class="fa-solid fa-bolt absolute -right-8 top-1 neon-text-cyan text-2xl"></i>
         </div>
 
         <!-- Contenedor del Acumulado -->
-        <div class="relative mt-8 w-full max-w-[95%] md:max-w-md mx-auto">
+        <div class="relative mt-10 w-full max-w-[95%] md:max-w-md mx-auto">
             <!-- Etiqueta EN VIVO -->
-            <div class="absolute -top-3 left-4 md:left-8 bg-rose-600 text-white text-[10px] md:text-xs font-bold px-3 py-1 rounded-full border-2 border-white z-20 shadow-lg flex items-center gap-1.5">
-                <div class="w-2.5 h-2.5 bg-white rounded-full animate-pulse"></div> EN VIVO
+            <div class="absolute -top-3 left-4 md:left-8 bg-black text-[#39ff14] text-[10px] md:text-xs font-bold px-3 py-1 rounded-sm border border-[#39ff14] shadow-[0_0_10px_rgba(57,255,20,0.5)] z-20 flex items-center gap-1.5 uppercase tracking-widest">
+                <div class="w-2 h-2 bg-[#39ff14] rounded-full animate-pulse shadow-[0_0_5px_#39ff14]"></div> EN VIVO
             </div>
             
-            <!-- Caja Acumulado (Azul Oscuro + Borde Neon) -->
-            <div class="neon-box bg-[#0a1647] py-3 px-4 rounded-[2rem] flex items-center justify-center gap-3 relative z-10">
-                <span class="text-white text-xs md:text-sm font-bold tracking-widest pt-1">ACUMULADO ACTUAL:</span>
-                <span id="top-accumulator" class="text-3xl md:text-5xl font-normal circus-font text-[#ffde00] drop-shadow-[0_0_8px_rgba(255,222,0,0.8)]">$0 MXN</span>
+            <!-- Caja Acumulado -->
+            <div class="neon-box-cyan py-3 px-4 rounded-xl flex items-center justify-center gap-3 relative z-10">
+                <span class="text-slate-300 text-xs md:text-sm font-bold tracking-widest pt-1">ACUMULADO ACTUAL:</span>
+                <span id="top-accumulator" class="text-3xl md:text-5xl font-black neon-font neon-text-cyan">$0 MXN</span>
             </div>
             
             <!-- Botón Admin (Centrado abajo del acumulado) -->
             <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-3">
-                <i class="fa-solid fa-star text-yellow-400 text-sm drop-shadow-md"></i>
-                <button onclick="openAdminModal()" class="bg-[#d92228] hover:bg-red-800 text-white font-bold text-sm px-6 py-1.5 rounded-full border-2 border-[#ffde00] shadow-[0_4px_0_#7a0b10] flex items-center gap-2 transition active:translate-y-1 active:shadow-none">
-                    <i class="fa-solid fa-gear"></i> Admin
+                <button onclick="openAdminModal()" class="bg-black hover:bg-[#111] text-[#ff00ff] font-bold text-xs px-6 py-1.5 rounded-sm border border-[#ff00ff] shadow-[0_0_10px_rgba(255,0,255,0.4)] flex items-center gap-2 transition active:scale-95 uppercase tracking-widest">
+                    <i class="fa-solid fa-terminal"></i> Admin
                 </button>
-                <i class="fa-solid fa-star text-yellow-400 text-sm drop-shadow-md"></i>
             </div>
         </div>
     </header>
@@ -110,224 +128,215 @@
     <!-- MAIN CONTAINER -->
     <main class="max-w-md md:max-w-xl mx-auto px-4 py-4 flex-grow w-full mt-2">
         
-        <!-- TARJETA PRINCIPAL (CARPA DE CIRCO) -->
-        <section class="bg-[#fcf5e3] rounded-xl border-[4px] border-[#ffde00] relative shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-10 overflow-hidden mb-10">
-            <!-- Rayas Toldo Superior -->
-            <div class="h-6 w-full toldo-rayas border-b-4 border-[#ffde00] shadow-sm relative z-20"></div>
+        <!-- TARJETA PRINCIPAL (PREMIO) -->
+        <section class="neon-box-magenta rounded-xl relative shadow-2xl z-10 overflow-hidden mb-10">
+            <div class="h-1 w-full bg-gradient-to-r from-transparent via-[#ff00ff] to-transparent"></div>
             
             <div class="p-5 md:p-7 text-center flex flex-col items-center">
                 <!-- Pildora Gran Sorteo -->
-                <div class="bg-[#ffeb99] text-[#1c1c1c] font-black text-[11px] px-5 py-2 rounded-full border border-[#eab308] mb-5 shadow-sm inline-flex items-center gap-2">
-                    🎪 Gran Sorteo Diario de Efectivo
+                <div class="bg-black text-[#00f3ff] font-black text-[11px] px-5 py-2 rounded-sm border border-[#00f3ff] mb-5 shadow-[0_0_8px_rgba(0,243,255,0.3)] inline-flex items-center gap-2 uppercase tracking-wider">
+                    <i class="fa-solid fa-gamepad"></i> Sorteo Diario de Efectivo
                 </div>
                 
                 <!-- Título del Premio -->
-                <h2 id="display-prize-title" class="text-3xl md:text-[38px] leading-none font-normal circus-font text-[#d92228] mb-6 flex flex-col items-center justify-center premio-text drop-shadow-[2px_2px_0px_#fef08a]">
+                <h2 id="display-prize-title" class="text-3xl md:text-[32px] leading-none font-black neon-font text-white mb-6 flex flex-col items-center justify-center">
                     Premio Acumulado:<br>
-                    <div class="flex items-center gap-2 mt-2">
-                        <i class="fa-solid fa-star text-[#ffde00] text-2xl drop-shadow-sm" style="-webkit-text-stroke: 1px #d92228;"></i>
-                        <span id="display-prize-amount" class="text-4xl md:text-5xl">$0 en Efectivo</span>
-                        <i class="fa-solid fa-star text-[#ffde00] text-2xl drop-shadow-sm" style="-webkit-text-stroke: 1px #d92228;"></i>
+                    <div class="flex items-center gap-3 mt-4">
+                        <i class="fa-solid fa-coins neon-text-magenta text-3xl"></i>
+                        <span id="display-prize-amount" class="text-4xl md:text-5xl neon-text-magenta drop-shadow-lg">$0 MXN</span>
+                        <i class="fa-solid fa-coins neon-text-magenta text-3xl"></i>
                     </div>
                 </h2>
 
                 <!-- Detalles: Costo y Horario -->
-                <div class="flex gap-2 w-full mb-6">
-                    <div class="flex-1 bg-[#fff8d6] border-2 border-[#fde047] rounded-[1rem] p-2.5 flex items-center justify-center gap-2 shadow-sm">
-                        <i class="fa-solid fa-ticket text-[#d92228] text-2xl -rotate-12"></i>
+                <div class="flex gap-3 w-full mb-6">
+                    <div class="flex-1 bg-black border border-[#00f3ff] shadow-[0_0_10px_rgba(0,243,255,0.2)] rounded-lg p-3 flex items-center justify-center gap-3">
+                        <i class="fa-solid fa-ticket neon-text-cyan text-2xl -rotate-12"></i>
                         <div class="text-left leading-tight">
-                            <span class="text-[9px] font-black text-slate-600 block">Costo por boleto:</span>
-                            <span id="display-ticket-price" class="text-[#0d9488] text-lg font-black block">$50 MXN</span>
+                            <span class="text-[9px] font-black text-slate-400 block uppercase tracking-wider">Costo Boleto</span>
+                            <span id="display-ticket-price" class="neon-text-cyan text-lg font-black block">$50 MXN</span>
                         </div>
                     </div>
-                    <div class="flex-1 bg-[#fff8d6] border-2 border-[#fde047] rounded-[1rem] p-2.5 flex items-center justify-center gap-2 shadow-sm">
-                        <i class="fa-regular fa-clock text-[#d92228] text-2xl"></i>
+                    <div class="flex-1 bg-black border border-[#ff00ff] shadow-[0_0_10px_rgba(255,0,255,0.2)] rounded-lg p-3 flex items-center justify-center gap-3">
+                        <i class="fa-regular fa-clock neon-text-magenta text-2xl"></i>
                         <div class="text-left leading-tight">
-                            <span class="text-[9px] font-black text-slate-600 block">Horario del Sorteo:</span>
-                            <span id="display-draw-time" class="text-[#d92228] text-lg font-black block">21:00 hrs</span>
+                            <span class="text-[9px] font-black text-slate-400 block uppercase tracking-wider">Hora Sorteo</span>
+                            <span id="display-draw-time" class="neon-text-magenta text-lg font-black block">21:00 hrs</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Boletos Disponibles (Formato Ticket) -->
-                <div class="w-full relative border-[3px] border-[#d92228] rounded-xl p-3 bg-[#fcf5e3]">
-                    <div class="absolute -left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-[#fcf5e3] border-r-[3px] border-[#d92228] rounded-full"></div>
-                    <div class="absolute -right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-[#fcf5e3] border-l-[3px] border-[#d92228] rounded-full"></div>
-                    
-                    <span class="text-[11px] font-black text-[#0f172a] block tracking-widest mb-0.5">BOLETOS DISPONIBLES</span>
+                <!-- Boletos Disponibles -->
+                <div class="w-full relative border border-[#39ff14] shadow-[0_0_15px_rgba(57,255,20,0.2)] rounded-lg p-3 bg-[rgba(0,20,0,0.5)]">
+                    <span class="text-[11px] font-black text-slate-300 block tracking-widest mb-1 uppercase">Tickets Restantes</span>
                     <div class="flex justify-center items-center gap-5">
-                        <i class="fa-solid fa-star text-[#ffde00] text-xl drop-shadow-sm"></i>
-                        <div id="stats-available" class="text-[44px] leading-none font-normal circus-font text-[#d92228]">100 / 100</div>
-                        <i class="fa-solid fa-star text-[#ffde00] text-xl drop-shadow-sm"></i>
+                        <i class="fa-solid fa-microchip neon-text-green text-xl"></i>
+                        <div id="stats-available" class="text-[40px] leading-none font-black neon-font neon-text-green">100 / 100</div>
+                        <i class="fa-solid fa-microchip neon-text-green text-xl"></i>
                     </div>
                 </div>
             </div>
-
-            <!-- Pico de Carpa Inferior -->
-            <div class="relative h-6 mt-2 overflow-hidden flex justify-center">
-                <div class="w-16 h-16 bg-[#d92228] transform rotate-45 translate-y-3 shadow-inner border-2 border-[#ffde00]"></div>
-            </div>
+            <div class="h-1 w-full bg-gradient-to-r from-transparent via-[#ff00ff] to-transparent mt-2"></div>
         </section>
 
         <!-- SECCIÓN DE BOLETOS -->
-        <section id="tickets-section" class="bg-[#fcf5e3] rounded-2xl shadow-xl border-4 border-[#ffde00] p-4 md:p-6 mb-10">
-            <div class="text-center mb-4 border-b-2 border-yellow-200 pb-4">
-                <h3 class="text-2xl font-normal circus-font text-[#d92228] mb-3">Selecciona tus Números</h3>
+        <section id="tickets-section" class="neon-box-cyan rounded-xl p-4 md:p-6 mb-10">
+            <div class="text-center mb-5 pb-4 border-b border-[#00f3ff]/30">
+                <h3 class="text-2xl font-black neon-font neon-text-cyan mb-4 uppercase tracking-widest">Selecciona tus Números</h3>
                 
                 <!-- Leyenda de Estados -->
-                <div class="flex flex-wrap justify-center items-center gap-3 text-[10px] md:text-xs font-black bg-white inline-flex px-4 py-2 rounded-full border border-yellow-300 shadow-sm">
-                    <div class="flex items-center gap-1.5 text-slate-700">
-                        <span class="w-3 h-3 rounded-full bg-white border-2 border-slate-300"></span> LIBRE
+                <div class="flex flex-wrap justify-center items-center gap-4 text-[10px] md:text-xs font-black inline-flex px-4 py-2 rounded-sm bg-black border border-slate-700">
+                    <div class="flex items-center gap-2 text-[#00f3ff]">
+                        <span class="w-3 h-3 bg-black border border-[#00f3ff] shadow-[0_0_5px_#00f3ff]"></span> LIBRE
                     </div>
-                    <div class="flex items-center gap-1.5 text-yellow-700">
-                        <span class="w-3 h-3 rounded-full bg-yellow-400"></span> APARTADO
+                    <div class="flex items-center gap-2 text-[#ffff00]">
+                        <span class="w-3 h-3 bg-[#1a1a00] border border-[#ffff00] shadow-[0_0_5px_#ffff00]"></span> APARTADO
                     </div>
-                    <div class="flex items-center gap-1.5 text-red-700">
-                        <span class="w-3 h-3 rounded-full bg-[#d92228]"></span> VENDIDO
+                    <div class="flex items-center gap-2 text-[#ff00ff]">
+                        <span class="w-3 h-3 bg-[#1a001a] border border-[#ff00ff] shadow-[0_0_5px_#ff00ff]"></span> VENDIDO
                     </div>
                 </div>
             </div>
 
             <!-- CUADRÍCULA DE BOLETOS -->
-            <div id="tickets-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2 max-h-[350px] overflow-y-auto p-2 bg-[#fff8d6] border-2 border-yellow-200 rounded-xl">
+            <div id="tickets-grid" class="grid grid-cols-5 sm:grid-cols-10 gap-2 max-h-[380px] overflow-y-auto p-3 bg-black border border-[#00f3ff]/30 rounded-lg shadow-inner">
                 <!-- Generado por JavaScript -->
             </div>
         </section>
 
         <!-- SECCIÓN DE RULETA / SORTEO EN VIVO -->
-        <section id="roulette-section" class="bg-[#fcf5e3] rounded-2xl shadow-xl border-4 border-[#ffde00] p-6 mb-8 text-center hidden-unless-admin">
-            <h3 class="text-2xl font-normal circus-font text-[#d92228] mb-2">Tómbola Virtual</h3>
-            <p class="text-xs font-bold text-slate-500 mb-6">Uso exclusivo del Administrador</p>
+        <section id="roulette-section" class="neon-box-magenta rounded-xl p-6 mb-8 text-center hidden-unless-admin">
+            <h3 class="text-2xl font-black neon-font neon-text-magenta mb-2 uppercase tracking-widest">Sorteo de Red</h3>
+            <p class="text-xs font-bold text-slate-500 mb-6 uppercase tracking-widest">Protocolo de Admin</p>
             
-            <div class="relative max-w-[280px] mx-auto aspect-square flex items-center justify-center bg-[#0a1647] rounded-full p-3 border-[6px] border-[#ffde00] shadow-[0_0_20px_rgba(0,0,0,0.4)]">
+            <div class="relative max-w-[280px] mx-auto aspect-square flex items-center justify-center bg-black rounded-full p-2 border-[4px] border-[#00f3ff] shadow-[0_0_30px_rgba(0,243,255,0.4)]">
                 <!-- Indicador Superior -->
-                <div class="absolute top-0 z-20 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-yellow-300 filter drop-shadow-md"></div>
+                <div class="absolute top-0 z-20 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-[#39ff14] filter drop-shadow-[0_0_8px_#39ff14]"></div>
                 
                 <canvas id="wheelCanvas" width="300" height="300" class="w-full h-full rounded-full"></canvas>
             </div>
 
-            <div class="mt-6">
-                <div id="winner-announcement" class="hidden bg-white py-4 px-6 rounded-2xl border-4 border-[#ffde00] shadow-xl animate-bounce">
-                    <div class="text-sm font-black text-slate-600 uppercase mb-1">Ganador Oficial</div>
-                    <div id="winner-name-display" class="text-2xl font-black text-emerald-600 leading-none mb-1">--</div>
-                    <div class="text-lg font-bold text-slate-800">Boleto: <span id="winner-number" class="text-[#d92228] circus-font text-2xl">--</span></div>
+            <div class="mt-8">
+                <div id="winner-announcement" class="hidden bg-black py-5 px-6 rounded-xl border border-[#39ff14] shadow-[0_0_20px_rgba(57,255,20,0.4)] animate-pulse">
+                    <div class="text-xs font-black text-[#39ff14] uppercase tracking-widest mb-2"><i class="fa-solid fa-user-astronaut"></i> Ganador Oficial</div>
+                    <div id="winner-name-display" class="text-2xl md:text-3xl font-black text-white leading-none mb-2">--</div>
+                    <div class="text-sm font-bold text-slate-400 tracking-widest uppercase">Token: <span id="winner-number" class="neon-text-green neon-font text-3xl">--</span></div>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- FOOTER FLOTANTE (CARRITO) - COLOR SÓLIDO, BOTÓN INMENSO -->
-    <div id="floating-cart" class="fixed bottom-0 left-0 right-0 bg-[#05103a] border-t-[4px] border-[#ffde00] px-4 py-3 shadow-[0_-10px_20px_rgba(0,0,0,0.8)] transform translate-y-full transition-transform duration-300 z-50">
-        <div class="max-w-md mx-auto flex items-center justify-between gap-3">
-            <div class="text-white text-xs font-black leading-tight">
-                Boletos: <span id="selected-count" class="text-[#ffde00] text-base">0</span><br>
-                Total: <span id="selected-total" class="text-[#ffde00] text-lg">$0</span>
+    <!-- FOOTER FLOTANTE (CARRITO) -->
+    <div id="floating-cart" class="fixed bottom-0 left-0 right-0 bg-[rgba(5,5,5,0.95)] backdrop-blur-md border-t border-[#ff00ff] px-4 py-4 shadow-[0_-10px_30px_rgba(255,0,255,0.2)] transform translate-y-full transition-transform duration-300 z-50">
+        <div class="max-w-md mx-auto flex items-center justify-between gap-4">
+            <div class="text-slate-300 text-xs font-black leading-tight uppercase tracking-widest">
+                Tickets: <span id="selected-count" class="neon-text-cyan text-lg">0</span><br>
+                Total: <span id="selected-total" class="neon-text-magenta text-xl">$0</span>
             </div>
-            <!-- BOTÓN GIGANTE Y SÓLIDO PARA APARTAR -->
-            <button onclick="openCustomerModal()" class="flex-1 bg-[#16a34a] text-white font-normal circus-font text-xl md:text-2xl py-3 rounded-xl border-b-4 border-[#14532d] shadow-lg flex items-center justify-center gap-2 active:border-b-0 active:translate-y-1">
-                <i class="fa-solid fa-ticket"></i> APARTAR
+            <!-- BOTÓN APARTAR NEÓN -->
+            <button onclick="openCustomerModal()" class="flex-1 bg-[#39ff14]/10 hover:bg-[#39ff14]/20 text-[#39ff14] font-black neon-font text-xl py-3 rounded-sm border border-[#39ff14] shadow-[0_0_15px_rgba(57,255,20,0.3)] flex items-center justify-center gap-2 transition-all">
+                <i class="fa-solid fa-lock"></i> ASEGURAR
             </button>
         </div>
     </div>
 
-    <!-- MODAL 1: DATOS DEL CLIENTE (FONDO OSCURO SÓLIDO) -->
-    <div id="customer-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[60] p-4">
-        <div class="bg-[#fcf5e3] rounded-2xl max-w-sm w-full p-6 shadow-2xl border-[4px] border-[#ffde00]">
-            <h3 class="text-2xl font-normal circus-font text-[#d92228] mb-1">Tus Datos</h3>
-            <p class="text-xs font-bold text-slate-600 mb-4">Ingresa tu nombre y WhatsApp para asegurar tus números.</p>
+    <!-- MODAL 1: DATOS DEL CLIENTE -->
+    <div id="customer-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
+        <div class="neon-box-cyan rounded-xl max-w-sm w-full p-6 shadow-2xl">
+            <h3 class="text-2xl font-black neon-font neon-text-cyan mb-1 uppercase">Tus Datos</h3>
+            <p class="text-xs font-bold text-slate-400 mb-5">Ingresa identidad para enlazar tus tokens.</p>
             
             <div class="space-y-4 mb-6">
                 <div>
-                    <label class="block text-[10px] font-black text-slate-800 mb-1 uppercase tracking-wide">Nombre Completo</label>
-                    <input type="text" id="client-name" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-800 focus:border-[#d92228] focus:outline-none" placeholder="Ej. Juan Pérez">
+                    <label class="block text-[10px] font-black text-[#00f3ff] mb-1 uppercase tracking-widest">Nombre Completo</label>
+                    <input type="text" id="client-name" class="w-full px-4 py-3 neon-input rounded-sm font-bold" placeholder="Ej. Neo">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-black text-slate-800 mb-1 uppercase tracking-wide">Número de WhatsApp</label>
-                    <input type="tel" id="client-whatsapp" class="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl font-bold text-slate-800 focus:border-[#d92228] focus:outline-none" placeholder="Ej. 5512345678">
+                    <label class="block text-[10px] font-black text-[#00f3ff] mb-1 uppercase tracking-widest">WhatsApp (Comlink)</label>
+                    <input type="tel" id="client-whatsapp" class="w-full px-4 py-3 neon-input rounded-sm font-bold" placeholder="Ej. 5512345678">
                 </div>
             </div>
 
-            <div class="flex flex-col gap-2">
-                <!-- BOTÓN SÓLIDO CONTINUAR -->
-                <button onclick="proceedToPayment()" class="w-full bg-[#16a34a] text-white py-3 font-black text-sm rounded-xl border-b-4 border-[#14532d] uppercase tracking-wide active:border-b-0 active:translate-y-1">
-                    Continuar al Pago
+            <div class="flex flex-col gap-3">
+                <button onclick="proceedToPayment()" class="w-full bg-[#00f3ff]/10 text-[#00f3ff] border border-[#00f3ff] shadow-[0_0_10px_rgba(0,243,255,0.3)] py-3 font-black text-sm rounded-sm uppercase tracking-widest hover:bg-[#00f3ff]/20 transition-all">
+                    Iniciar Transacción
                 </button>
-                <button onclick="closeCustomerModal()" class="w-full py-2 text-slate-500 text-xs font-black uppercase mt-1">Cancelar</button>
+                <button onclick="closeCustomerModal()" class="w-full py-2 text-slate-500 hover:text-slate-300 text-xs font-black uppercase tracking-widest">Abortar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 2: MÉTODO DE PAGO (SOLO MERCADO PAGO, SÓLIDO Y CLARO) -->
-    <div id="payment-modal" class="fixed inset-0 bg-black/90 hidden items-center justify-center z-[60] p-4">
-        <div class="bg-[#fcf5e3] rounded-2xl max-w-sm w-full p-6 shadow-2xl border-[4px] border-[#ffde00] text-center">
-            <h3 class="text-2xl font-normal circus-font text-[#d92228] mb-1">Pago en Línea</h3>
-            <p class="text-xs font-bold text-slate-600 mb-6">Paga de forma 100% segura para confirmar.</p>
+    <!-- MODAL 2: MÉTODO DE PAGO -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
+        <div class="neon-box-cyan rounded-xl max-w-sm w-full p-6 shadow-2xl text-center">
+            <h3 class="text-2xl font-black neon-font neon-text-cyan mb-1 uppercase">Pago Seguro</h3>
+            <p class="text-xs font-bold text-slate-400 mb-6">Protocolo de pago cifrado.</p>
             
-            <!-- BOTÓN AZUL MERCADO PAGO SÓLIDO -->
-            <button onclick="payWithMercadoPago()" class="w-full bg-[#009ee3] text-white rounded-2xl p-4 border-b-4 border-[#0070a8] flex items-center justify-between active:border-b-0 active:translate-y-1 mb-4 shadow-lg">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#009ee3] text-xl">
+            <!-- BOTÓN MERCADO PAGO ESTILO CYBERPUNK -->
+            <button onclick="payWithMercadoPago()" class="w-full bg-[#009ee3]/10 text-white rounded-sm p-4 border border-[#009ee3] hover:bg-[#009ee3]/20 shadow-[0_0_15px_rgba(0,158,227,0.3)] flex items-center justify-between transition-all mb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 bg-black border border-[#009ee3] rounded-full flex items-center justify-center text-[#009ee3] text-xl shadow-[0_0_10px_rgba(0,158,227,0.5)]">
                         <i class="fa-solid fa-credit-card"></i>
                     </div>
                     <div class="text-left">
-                        <div class="font-black text-lg">Mercado Pago</div>
-                        <div class="text-[10px] font-bold text-white/90 uppercase">Tarjetas o Efectivo</div>
+                        <div class="font-black text-lg text-[#009ee3] tracking-wider">Mercado Pago</div>
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Crédito / Débito / Efectivo</div>
                     </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-xl"></i>
+                <i class="fa-solid fa-chevron-right text-[#009ee3]"></i>
             </button>
 
-            <button onclick="closePaymentModal()" class="w-full py-2 text-slate-500 text-xs font-black uppercase">Regresar</button>
+            <button onclick="closePaymentModal()" class="w-full py-2 text-slate-500 hover:text-slate-300 text-xs font-black uppercase tracking-widest">Regresar</button>
         </div>
     </div>
 
     <!-- MODAL 4: PANEL DE ADMINISTRADOR -->
-    <div id="admin-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4">
-        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border-4 border-[#d92228] max-h-[90vh] overflow-y-auto">
+    <div id="admin-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
+        <div class="bg-[#050505] rounded-xl max-w-sm w-full p-6 shadow-2xl border border-[#ff00ff] box-shadow-[0_0_30px_rgba(255,0,255,0.2)] max-h-[90vh] overflow-y-auto">
             <div id="admin-login-view">
-                <h3 class="text-2xl font-normal circus-font text-[#d92228] mb-1 text-center">Acceso Admin</h3>
-                <input type="password" id="admin-pin" class="w-full px-4 py-3 bg-slate-100 border-2 border-slate-300 rounded-xl text-center font-black text-2xl mb-4 mt-4 tracking-[0.5em] focus:outline-none focus:border-[#d92228]" placeholder="••••">
-                <button onclick="verifyAdminPin()" class="w-full bg-[#d92228] text-white py-3 font-black rounded-xl border-b-4 border-[#7a0b10] uppercase mb-2 active:border-b-0 active:translate-y-1">Ingresar</button>
-                <button onclick="closeAdminModal()" class="w-full py-2 text-slate-500 font-black uppercase text-xs">Cancelar</button>
+                <h3 class="text-2xl font-black neon-font neon-text-magenta mb-1 text-center uppercase tracking-widest">Acceso Root</h3>
+                <input type="password" id="admin-pin" class="w-full px-4 py-3 neon-input rounded-sm text-center font-black text-2xl mb-4 mt-4 tracking-[0.5em]" placeholder="••••">
+                <button onclick="verifyAdminPin()" class="w-full bg-[#ff00ff]/10 text-[#ff00ff] border border-[#ff00ff] py-3 font-black rounded-sm uppercase tracking-widest mb-3 hover:bg-[#ff00ff]/20 shadow-[0_0_10px_rgba(255,0,255,0.3)]">Desbloquear</button>
+                <button onclick="closeAdminModal()" class="w-full py-2 text-slate-500 hover:text-slate-300 font-black uppercase tracking-widest text-xs">Desconectar</button>
             </div>
 
             <div id="admin-dashboard-view" class="hidden space-y-4">
-                <div class="flex justify-between items-center border-b-2 pb-2">
-                    <h3 class="text-lg font-black text-slate-800">Panel de Control</h3>
-                    <button onclick="closeAdminModal()" class="text-slate-400 hover:text-slate-700 text-2xl"><i class="fa-solid fa-xmark"></i></button>
+                <div class="flex justify-between items-center border-b border-[#333] pb-3">
+                    <h3 class="text-lg font-black text-white uppercase tracking-widest"><i class="fa-solid fa-server text-[#00f3ff] mr-2"></i> Dashboard</h3>
+                    <button onclick="closeAdminModal()" class="text-slate-500 hover:text-[#ff00ff] text-2xl"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-2 text-xs">
+                <div class="grid grid-cols-2 gap-3 text-xs">
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Costo ($)</label>
-                        <input type="number" id="admin-price-input" class="w-full px-2 py-2 bg-slate-100 border-2 border-slate-200 rounded-lg font-bold" value="50">
+                        <label class="block font-black text-[#00f3ff] mb-1 uppercase">Costo ($)</label>
+                        <input type="number" id="admin-price-input" class="w-full px-2 py-2 neon-input rounded-sm font-bold text-center" value="50">
                     </div>
                     <div>
-                        <label class="block font-black text-slate-700 mb-1">Horario</label>
-                        <input type="time" id="admin-time-input" class="w-full px-2 py-2 bg-slate-100 border-2 border-slate-200 rounded-lg font-bold" value="21:00">
+                        <label class="block font-black text-[#00f3ff] mb-1 uppercase">Hora</label>
+                        <input type="time" id="admin-time-input" class="w-full px-2 py-2 neon-input rounded-sm font-bold text-center" value="21:00">
                     </div>
                 </div>
 
                 <!-- Gestor de Boletos Vendidos -->
-                <div class="border-t-2 pt-3">
-                    <h4 class="font-black text-slate-800 mb-2 flex justify-between text-xs">
+                <div class="border-t border-[#333] pt-3">
+                    <h4 class="font-black text-slate-300 mb-2 flex justify-between text-xs uppercase tracking-widest">
                         <span>Pendientes:</span>
-                        <span id="admin-apartados-count" class="text-orange-600">0</span>
+                        <span id="admin-apartados-count" class="neon-text-magenta">0</span>
                     </h4>
-                    <div id="admin-apartados-list" class="max-h-32 overflow-y-auto space-y-2 border-2 border-slate-100 p-2 rounded-xl bg-slate-50">
+                    <div id="admin-apartados-list" class="max-h-32 overflow-y-auto space-y-2 border border-[#333] p-2 rounded-sm bg-black">
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-2 pt-2 border-t-2">
-                    <button onclick="saveAdminSettings()" class="bg-slate-800 text-white font-black py-2 rounded-lg text-xs">Guardar Ajustes</button>
+                <div class="flex flex-col gap-3 pt-3 border-t border-[#333]">
+                    <button onclick="saveAdminSettings()" class="bg-white/5 text-white border border-slate-600 hover:border-slate-400 font-black py-2 rounded-sm text-xs uppercase tracking-widest transition-all">Guardar Configuración</button>
                     <!-- Iniciar Sorteo -->
-                    <button onclick="triggerRouletteFromAdmin()" class="bg-[#ffde00] text-black font-black py-3 rounded-lg text-sm border-2 border-orange-500 shadow-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-trophy"></i> GIRAR RULETA
+                    <button onclick="triggerRouletteFromAdmin()" class="bg-[#39ff14]/10 text-[#39ff14] border border-[#39ff14] hover:bg-[#39ff14]/20 font-black py-3 rounded-sm text-sm uppercase tracking-widest shadow-[0_0_10px_rgba(57,255,20,0.3)] flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-play"></i> INICIAR SORTEO
                     </button>
                     <!-- Reiniciar Día -->
-                    <button onclick="resetTicketsGrid()" class="bg-red-100 text-red-700 font-black py-2 rounded-lg text-xs mt-2">
-                        <i class="fa-solid fa-trash mr-1"></i> Borrar Todo (Nuevo Día)
+                    <button onclick="resetTicketsGrid()" class="bg-red-900/20 text-red-500 border border-red-900 hover:bg-red-900/40 font-black py-2 rounded-sm text-xs mt-1 uppercase tracking-widest transition-all">
+                        <i class="fa-solid fa-power-off mr-1"></i> Purgar Sistema (Reset)
                     </button>
                 </div>
             </div>
@@ -377,20 +386,24 @@
                 }
 
                 const btn = document.createElement('button');
-                btn.className = `ticket-btn py-2 md:py-3 rounded-lg font-black text-sm md:text-base border-2 flex items-center justify-center `;
+                btn.className = `ticket-btn py-2 md:py-3 rounded-sm font-black neon-font text-sm md:text-base border flex items-center justify-center transition-all duration-300 `;
                 
                 if (state === 'libre') {
                     if (selectedTickets.includes(i)) {
-                        btn.className += `bg-[#16a34a] text-white border-[#14532d] shadow-inner`;
+                        // Estado Seleccionado: Fondo Cyan sólido, texto negro
+                        btn.className += `bg-[#00f3ff] text-black border-[#00f3ff] shadow-[0_0_10px_#00f3ff]`;
                     } else {
-                        btn.className += `bg-white text-slate-700 border-slate-300`;
+                        // Estado Libre: Fondo oscuro, borde y texto Cyan
+                        btn.className += `bg-[#030303] text-[#00f3ff] border-[#00f3ff]/50 hover:border-[#00f3ff] hover:shadow-[0_0_10px_rgba(0,243,255,0.4)]`;
                     }
                     btn.onclick = () => toggleTicketSelection(i);
                 } else if (state === 'apartado') {
-                    btn.className += `bg-[#facc15] text-[#713f12] border-[#ca8a04] cursor-not-allowed opacity-90`;
+                    // Estado Apartado: Amarilo Neón
+                    btn.className += `bg-[#1a1a00] text-[#ffff00] border-[#ffff00] shadow-[0_0_5px_#ffff00] cursor-not-allowed opacity-80`;
                     btn.disabled = true;
                 } else {
-                    btn.className += `bg-[#d92228] text-white border-[#991b1b] cursor-not-allowed opacity-90`;
+                    // Estado Vendido: Magenta Neón
+                    btn.className += `bg-[#1a001a] text-[#ff00ff] border-[#ff00ff] shadow-[0_0_5px_#ff00ff] cursor-not-allowed opacity-80`;
                     btn.disabled = true;
                 }
 
@@ -400,7 +413,7 @@
 
             document.getElementById('stats-available').innerText = `${availableCount} / ${totalTickets}`;
             document.getElementById('top-accumulator').innerText = `$${totalAccumulated} MXN`;
-            document.getElementById('display-prize-amount').innerText = `$${totalAccumulated} en Efectivo`;
+            document.getElementById('display-prize-amount').innerText = `$${totalAccumulated} MXN`;
             
             updateCartBar();
             renderAdminApartadosList();
@@ -448,7 +461,7 @@
             const wats = document.getElementById('client-whatsapp').value.trim();
 
             if (!name || !wats) {
-                alert('Por favor ingresa tu nombre y WhatsApp.');
+                alert('Faltan credenciales: Ingresa nombre y WhatsApp.');
                 return;
             }
 
@@ -500,7 +513,7 @@
                 document.getElementById('admin-dashboard-view').classList.remove('hidden');
                 renderAdminApartadosList();
             } else {
-                alert('PIN Incorrecto');
+                alert('ACCESO DENEGADO');
             }
         }
 
@@ -513,18 +526,18 @@
             for (let i = 0; i < totalTickets; i++) {
                 if (ticketsState[i] === 'apartado') {
                     apartadosCount++;
-                    const client = clientDataStore[i] || { name: 'Web', whatsapp: '--' };
+                    const client = clientDataStore[i] || { name: 'Desconocido', whatsapp: '--' };
                     const numStr = String(i).padStart(2, '0');
                     
                     const div = document.createElement('div');
-                    div.className = 'flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200 text-xs shadow-sm';
+                    div.className = 'flex items-center justify-between bg-[#111] p-2 rounded-sm border border-[#333] text-xs shadow-sm';
                     div.innerHTML = `
                         <div>
-                            <span class="font-black text-slate-800">#${numStr}</span> - <span class="font-bold text-slate-700">${client.name}</span>
-                            <div class="text-[9px] text-slate-400">Wa: ${client.whatsapp}</div>
+                            <span class="font-black text-[#00f3ff] neon-font">#${numStr}</span> - <span class="font-bold text-slate-300">${client.name}</span>
+                            <div class="text-[9px] text-slate-500 uppercase tracking-widest">Wa: ${client.whatsapp}</div>
                         </div>
-                        <button onclick="markAsSold(${i})" class="bg-[#16a34a] text-white px-2 py-1 rounded font-black shadow-sm uppercase text-[9px]">
-                            Vender
+                        <button onclick="markAsSold(${i})" class="bg-[#00f3ff]/10 hover:bg-[#00f3ff]/30 border border-[#00f3ff] text-[#00f3ff] px-2 py-1 rounded-sm font-black uppercase text-[9px] transition-all">
+                            Validar
                         </button>
                     `;
                     listContainer.appendChild(div);
@@ -533,7 +546,7 @@
 
             countBadge.innerText = apartadosCount;
             if (apartadosCount === 0) {
-                listContainer.innerHTML = `<p class="text-slate-400 text-center py-2 font-bold text-[10px] uppercase">Ninguno</p>`;
+                listContainer.innerHTML = `<p class="text-slate-600 text-center py-2 font-bold text-[10px] uppercase tracking-widest">Sin registros</p>`;
             }
         }
 
@@ -552,20 +565,20 @@
             document.getElementById('display-draw-time').innerText = `${time} hrs`;
             ticketPrice = price;
 
-            alert('Guardado.');
+            alert('Configuración del sistema actualizada.');
             closeAdminModal();
             renderTickets();
         }
 
         function resetTicketsGrid() {
-            if (confirm('¿BORRAR TODOS los boletos y empezar nuevo día?')) {
+            if (confirm('¿ADVERTENCIA: Purgar todos los registros y reiniciar base de datos?')) {
                 ticketsState = Array(totalTickets).fill('libre');
                 clientDataStore = {};
                 localStorage.removeItem('jisthan_tickets');
                 localStorage.removeItem('jisthan_clients');
                 selectedTickets = [];
                 renderTickets();
-                alert('Reiniciado.');
+                alert('Sistema purgado correctamente.');
             }
         }
 
@@ -575,7 +588,7 @@
             spinWheel();
         }
 
-        // Ruleta
+        // Ruleta Cyberpunk
         const canvas = document.getElementById('wheelCanvas');
         const ctx = canvas.getContext('2d');
         let currentAngle = 0;
@@ -597,30 +610,34 @@
                 ctx.arc(center, center, radius, angle + i * sliceAngle, angle + (i + 1) * sliceAngle);
                 ctx.closePath();
 
-                ctx.fillStyle = i % 2 === 0 ? '#d92228' : '#ffde00';
+                // Colores Neón Alternados (Magenta y Cyan oscurecidos para el fondo de las rebanadas)
+                ctx.fillStyle = i % 2 === 0 ? '#4d004d' : '#004d4d';
                 ctx.fill();
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 1;
+                // Borde brilloso
+                ctx.strokeStyle = i % 2 === 0 ? '#ff00ff' : '#00f3ff';
+                ctx.lineWidth = 2;
                 ctx.stroke();
 
                 ctx.save();
                 ctx.translate(center, center);
                 ctx.rotate(angle + i * sliceAngle + sliceAngle / 2);
                 ctx.textAlign = 'right';
-                ctx.fillStyle = i % 2 === 0 ? '#ffffff' : '#d92228';
-                ctx.font = '900 14px Montserrat';
+                // Texto de color neón brillante
+                ctx.fillStyle = i % 2 === 0 ? '#ff00ff' : '#00f3ff';
+                ctx.font = '900 14px Orbitron';
                 const label = participants.length > 0 ? String(participants[i]).padStart(2, '0') : '--';
                 ctx.fillText(label, radius - 15, 5);
                 ctx.restore();
                 ctx.restore();
             }
 
+            // Centro del Canvas
             ctx.beginPath();
             ctx.arc(center, center, 25, 0, 2 * Math.PI);
-            ctx.fillStyle = '#0a1647';
+            ctx.fillStyle = '#050505';
             ctx.fill();
             ctx.lineWidth = 4;
-            ctx.strokeStyle = '#ffde00';
+            ctx.strokeStyle = '#39ff14'; // Verde Neón en el centro
             ctx.stroke();
         }
 
@@ -630,8 +647,8 @@
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'square';
-                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime); // Tono más digital
+                gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
                 osc.connect(gain);
                 gain.connect(audioCtx.destination);
@@ -651,7 +668,7 @@
             }
 
             if (activeParticipants.length === 0) {
-                alert('No hay boletos VENDIDOS para el sorteo.');
+                alert('Error: No hay tokens VENDIDOS para iniciar el protocolo de sorteo.');
                 return;
             }
 
@@ -690,13 +707,14 @@
             const winningTicketNum = participants[winningSliceIndex];
             const winningNumStr = String(winningTicketNum).padStart(2, '0');
             
-            const clientInfo = clientDataStore[winningTicketNum] || { name: 'Afortunado' };
+            const clientInfo = clientDataStore[winningTicketNum] || { name: 'Usuario Desconocido' };
 
             document.getElementById('winner-number').innerText = winningNumStr;
             document.getElementById('winner-name-display').innerText = clientInfo.name;
             document.getElementById('winner-announcement').classList.remove('hidden');
 
-            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#d92228', '#ffde00', '#0a1647'] });
+            // Confeti colores neón
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#ff00ff', '#00f3ff', '#39ff14', '#ffffff'] });
         }
 
         // Carga inicial
