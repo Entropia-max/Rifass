@@ -46,6 +46,19 @@
             color: #fff;
             text-shadow: 0 0 10px #00f3ff, 0 0 20px #00f3ff, 0 0 40px #00f3ff, 0 0 80px #00f3ff;
         }
+
+        /* Estilo Letrero JISTHAN Neón Redondeado */
+        .jisthan-neon {
+            color: #ff00ff;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 
+                0 0 5px rgba(255, 0, 255, 0.8),
+                0 0 10px rgba(255, 0, 255, 0.8),
+                0 0 20px rgba(255, 0, 255, 0.8),
+                0 0 40px #ff00ff,
+                0 0 80px #ff00ff;
+            -webkit-text-stroke: 1px #fff;
+        }
         
         /* Cajas Neón */
         .neon-box-cyan {
@@ -90,21 +103,21 @@
 
     <!-- HEADER: TÍTULO Y ACUMULADO -->
     <header class="w-full pt-10 pb-4 px-4 text-center relative z-40">
-        <!-- Título Principal -->
-        <h1 class="text-6xl md:text-7xl font-black neon-font title-rifas leading-none tracking-widest mb-1">
+        <!-- Título Principal con Toque Secreto (5 veces) -->
+        <h1 onclick="handleSecretTap()" class="cursor-pointer text-6xl md:text-7xl font-black neon-font title-rifas leading-none tracking-widest mb-2 select-none">
             RIFAS
         </h1>
-        <div class="inline-block relative -mt-2">
-            <span class="text-black bg-[#ff00ff] text-2xl md:text-3xl neon-font px-6 py-1 rounded-sm inline-block tracking-[0.2em] relative z-10 box-shadow-[0_0_15px_#ff00ff] border border-white">
+        <div class="inline-block relative">
+            <span class="text-4xl md:text-5xl font-black jisthan-neon tracking-[0.2em] relative z-10 inline-block px-4 py-1">
                 JISTHAN
             </span>
-            <!-- Estrellas/Rayos flotantes título -->
-            <i class="fa-solid fa-bolt absolute -left-8 top-1 neon-text-cyan text-2xl"></i>
-            <i class="fa-solid fa-bolt absolute -right-8 top-1 neon-text-cyan text-2xl"></i>
+            <!-- Rayos flotantes título -->
+            <i class="fa-solid fa-bolt absolute -left-6 top-3 neon-text-cyan text-xl"></i>
+            <i class="fa-solid fa-bolt absolute -right-6 top-3 neon-text-cyan text-xl"></i>
         </div>
 
         <!-- Contenedor del Acumulado -->
-        <div class="relative mt-10 w-full max-w-[95%] md:max-w-md mx-auto">
+        <div class="relative mt-8 w-full max-w-[95%] md:max-w-md mx-auto">
             <!-- Etiqueta EN VIVO -->
             <div class="absolute -top-3 left-4 md:left-8 bg-black text-[#39ff14] text-[10px] md:text-xs font-bold px-3 py-1 rounded-sm border border-[#39ff14] shadow-[0_0_10px_rgba(57,255,20,0.5)] z-20 flex items-center gap-1.5 uppercase tracking-widest">
                 <div class="w-2 h-2 bg-[#39ff14] rounded-full animate-pulse shadow-[0_0_5px_#39ff14]"></div> EN VIVO
@@ -116,8 +129,8 @@
                 <span id="top-accumulator" class="text-3xl md:text-5xl font-black neon-font neon-text-cyan">$0 MXN</span>
             </div>
             
-            <!-- Botón Admin (Centrado abajo del acumulado) -->
-            <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-3">
+            <!-- Botón Admin (Oculto por defecto, aparece con 5 toques en RIFAS) -->
+            <div id="admin-btn-container" class="hidden absolute -bottom-4 left-1/2 transform -translate-x-1/2 z-30 flex items-center gap-3">
                 <button onclick="openAdminModal()" class="bg-black hover:bg-[#111] text-[#ff00ff] font-bold text-xs px-6 py-1.5 rounded-sm border border-[#ff00ff] shadow-[0_0_10px_rgba(255,0,255,0.4)] flex items-center gap-2 transition active:scale-95 uppercase tracking-widest">
                     <i class="fa-solid fa-terminal"></i> Admin
                 </button>
@@ -370,6 +383,26 @@
         let selectedTickets = [];
         let ticketPrice = 50;
 
+        // --- EASTER EGG: 5 TOQUES EN "RIFAS" PARA MOSTRAR/OCULTAR ADMIN ---
+        let tapCount = 0;
+        let tapTimer = null;
+
+        function handleSecretTap() {
+            tapCount++;
+            clearTimeout(tapTimer);
+            
+            if (tapCount >= 5) {
+                const adminBtn = document.getElementById('admin-btn-container');
+                adminBtn.classList.toggle('hidden'); 
+                tapCount = 0; 
+            } else {
+                tapTimer = setTimeout(() => {
+                    tapCount = 0;
+                }, 1000); 
+            }
+        }
+        // -----------------------------------------------------------------
+
         // Inicializar Cuadrícula
         function renderTickets() {
             const grid = document.getElementById('tickets-grid');
@@ -390,19 +423,15 @@
                 
                 if (state === 'libre') {
                     if (selectedTickets.includes(i)) {
-                        // Estado Seleccionado: Fondo Cyan sólido, texto negro
                         btn.className += `bg-[#00f3ff] text-black border-[#00f3ff] shadow-[0_0_10px_#00f3ff]`;
                     } else {
-                        // Estado Libre: Fondo oscuro, borde y texto Cyan
                         btn.className += `bg-[#030303] text-[#00f3ff] border-[#00f3ff]/50 hover:border-[#00f3ff] hover:shadow-[0_0_10px_rgba(0,243,255,0.4)]`;
                     }
                     btn.onclick = () => toggleTicketSelection(i);
                 } else if (state === 'apartado') {
-                    // Estado Apartado: Amarilo Neón
                     btn.className += `bg-[#1a1a00] text-[#ffff00] border-[#ffff00] shadow-[0_0_5px_#ffff00] cursor-not-allowed opacity-80`;
                     btn.disabled = true;
                 } else {
-                    // Estado Vendido: Magenta Neón
                     btn.className += `bg-[#1a001a] text-[#ff00ff] border-[#ff00ff] shadow-[0_0_5px_#ff00ff] cursor-not-allowed opacity-80`;
                     btn.disabled = true;
                 }
@@ -610,10 +639,8 @@
                 ctx.arc(center, center, radius, angle + i * sliceAngle, angle + (i + 1) * sliceAngle);
                 ctx.closePath();
 
-                // Colores Neón Alternados (Magenta y Cyan oscurecidos para el fondo de las rebanadas)
                 ctx.fillStyle = i % 2 === 0 ? '#4d004d' : '#004d4d';
                 ctx.fill();
-                // Borde brilloso
                 ctx.strokeStyle = i % 2 === 0 ? '#ff00ff' : '#00f3ff';
                 ctx.lineWidth = 2;
                 ctx.stroke();
@@ -622,7 +649,6 @@
                 ctx.translate(center, center);
                 ctx.rotate(angle + i * sliceAngle + sliceAngle / 2);
                 ctx.textAlign = 'right';
-                // Texto de color neón brillante
                 ctx.fillStyle = i % 2 === 0 ? '#ff00ff' : '#00f3ff';
                 ctx.font = '900 14px Orbitron';
                 const label = participants.length > 0 ? String(participants[i]).padStart(2, '0') : '--';
@@ -631,13 +657,12 @@
                 ctx.restore();
             }
 
-            // Centro del Canvas
             ctx.beginPath();
             ctx.arc(center, center, 25, 0, 2 * Math.PI);
             ctx.fillStyle = '#050505';
             ctx.fill();
             ctx.lineWidth = 4;
-            ctx.strokeStyle = '#39ff14'; // Verde Neón en el centro
+            ctx.strokeStyle = '#39ff14';
             ctx.stroke();
         }
 
@@ -647,7 +672,7 @@
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'square';
-                osc.frequency.setValueAtTime(400, audioCtx.currentTime); // Tono más digital
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
                 gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
                 osc.connect(gain);
@@ -713,7 +738,6 @@
             document.getElementById('winner-name-display').innerText = clientInfo.name;
             document.getElementById('winner-announcement').classList.remove('hidden');
 
-            // Confeti colores neón
             confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#ff00ff', '#00f3ff', '#39ff14', '#ffffff'] });
         }
 
