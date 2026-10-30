@@ -218,7 +218,7 @@
             </div>
         </section>
 
-        <!-- SECCIÓN DE RULETA / SORTEO EN VIVO -->
+        <!-- SECCIÓN DE RULETA / SORTEO EN VIVO (CLIENTES) -->
         <section id="roulette-section" class="neon-box-magenta rounded-xl p-6 mb-8 text-center">
             <h3 class="text-2xl font-black neon-font neon-text-magenta mb-2 uppercase tracking-widest">Sorteo de Red</h3>
             <p class="text-xs font-bold text-slate-500 mb-6 uppercase tracking-widest">Protocolo en Vivo</p>
@@ -307,7 +307,7 @@
 
     <!-- MODAL 4: PANEL DE ADMINISTRADOR -->
     <div id="admin-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
-        <div class="bg-[#050505] rounded-xl max-w-sm w-full p-6 shadow-2xl border border-[#ff00ff] box-shadow-[0_0_30px_rgba(255,0,255,0.2)] max-h-[90vh] overflow-y-auto">
+        <div class="bg-[#050505] rounded-xl max-w-md w-full p-6 shadow-2xl border border-[#ff00ff] box-shadow-[0_0_30px_rgba(255,0,255,0.2)] max-h-[90vh] overflow-y-auto">
             <div id="admin-login-view">
                 <h3 class="text-2xl font-black neon-font neon-text-magenta mb-1 text-center uppercase tracking-widest">Acceso Root</h3>
                 <input type="password" id="admin-pin" class="w-full px-4 py-3 neon-input rounded-sm text-center font-black text-2xl mb-4 mt-4 tracking-[0.5em]" placeholder="••••">
@@ -317,11 +317,11 @@
 
             <div id="admin-dashboard-view" class="hidden space-y-4">
                 <div class="flex justify-between items-center border-b border-[#333] pb-3">
-                    <h3 class="text-lg font-black text-white uppercase tracking-widest"><i class="fa-solid fa-server text-[#00f3ff] mr-2"></i> Dashboard</h3>
+                    <h3 class="text-lg font-black text-white uppercase tracking-widest"><i class="fa-solid fa-server text-[#00f3ff] mr-2"></i> Dashboard Admin</h3>
                     <button onclick="closeAdminModal()" class="text-slate-500 hover:text-[#ff00ff] text-2xl"><i class="fa-solid fa-xmark"></i></button>
                 </div>
 
-                <!-- CONTADOR DE USUARIOS EN LÍNEA DENTRO DEL PANEL DE ADMIN -->
+                <!-- CONTADOR DE USUARIOS EN LÍNEA -->
                 <div class="bg-black/80 border border-[#00f3ff] p-3 rounded-md flex items-center justify-between shadow-[0_0_10px_rgba(0,243,255,0.2)]">
                     <span class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-2">
                         <i class="fa-solid fa-users text-[#00f3ff]"></i> Usuarios en línea:
@@ -329,6 +329,19 @@
                     <span id="admin-online-users" class="neon-text-cyan neon-font text-lg font-black">1</span>
                 </div>
                 
+                <!-- VISTA DE LA RULETA EN EL PANEL DE ADMINISTRADOR -->
+                <div class="bg-black/90 border border-[#ff00ff] rounded-lg p-4 text-center shadow-[0_0_15px_rgba(255,0,255,0.2)]">
+                    <h4 class="text-xs font-black neon-font neon-text-magenta mb-2 uppercase tracking-widest"><i class="fa-solid fa-dharmachakra"></i> Monitor de Ruleta Admin</h4>
+                    <div class="relative max-w-[160px] mx-auto aspect-square flex items-center justify-center bg-black rounded-full p-1 border-[3px] border-[#ff00ff] shadow-[0_0_15px_rgba(255,0,255,0.4)] my-2">
+                        <div class="absolute top-0 z-20 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[14px] border-t-[#39ff14]"></div>
+                        <canvas id="adminWheelCanvas" width="180" height="180" class="w-full h-full rounded-full"></canvas>
+                    </div>
+                    <div id="admin-winner-announcement" class="hidden mt-2 bg-black/80 p-2 rounded border border-[#39ff14]">
+                        <div class="text-[10px] font-black text-[#39ff14] uppercase">Ganador: <span id="admin-winner-name" class="text-white">--</span></div>
+                        <div class="text-xs font-bold text-slate-300 uppercase">Token: <span id="admin-winner-num" class="neon-text-green neon-font">--</span></div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3 text-xs">
                     <div>
                         <label class="block font-black text-[#00f3ff] mb-1 uppercase">Costo ($)</label>
@@ -346,7 +359,7 @@
                         <span>Pendientes:</span>
                         <span id="admin-apartados-count" class="neon-text-magenta">0</span>
                     </h4>
-                    <div id="admin-apartados-list" class="max-h-32 overflow-y-auto space-y-2 border border-[#333] p-2 rounded-sm bg-black">
+                    <div id="admin-apartados-list" class="max-h-28 overflow-y-auto space-y-2 border border-[#333] p-2 rounded-sm bg-black">
                     </div>
                 </div>
 
@@ -402,7 +415,6 @@
                 localStorage.setItem('rifas_client_id', clientId);
             }
             
-            // Enviar pulso de actividad cada 8 segundos
             const updateHeartbeat = async () => {
                 try {
                     const docRef = doc(db, "rifas", "Principal");
@@ -428,7 +440,7 @@
                     if (data.price !== undefined) ticketPrice = data.price;
                     if (data.time) drawTime = data.time;
 
-                    // Calcular personas en línea (activas en los últimos 20 segundos)
+                    // Calcular personas en línea
                     if (data.presence) {
                         const now = Date.now();
                         let activeCount = 0;
@@ -446,7 +458,7 @@
                     document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
                     renderTickets();
 
-                    // Detectar orden de giro sincronizado y ID de sorteo único
+                    // Detectar orden de giro sincronizado
                     if (data.gameState === "spinning" && data.spinId && data.spinId !== lastHandledSpinId) {
                         lastHandledSpinId = data.spinId;
                         localGameState = "spinning";
@@ -627,6 +639,7 @@
                 document.getElementById('admin-login-view').classList.add('hidden');
                 document.getElementById('admin-dashboard-view').classList.remove('hidden');
                 renderAdminApartadosList();
+                drawAdminWheel(0, Array.from({length: 100}, (_, i) => i));
             } else {
                 alert('ACCESO DENEGADO');
             }
@@ -711,12 +724,10 @@
                 return;
             }
 
-            // Seleccionar ganador determinista
             const randomIndex = Math.floor(Math.random() * activeParticipants.length);
             const winningTicket = activeParticipants[randomIndex];
             const uniqueSpinId = 'spin_' + Date.now();
 
-            // NOTA: NO cerramos el modal (openAdminModal) para mantener al admin en el panel.
             await updateDoc(doc(db, "rifas", "Principal"), { 
                 gameState: "spinning",
                 winningIndex: winningTicket,
@@ -724,7 +735,7 @@
             });
         }
 
-        // DIBUJO Y ANIMACIÓN DE LA RULETA
+        // --- RULETA PRINCIPAL (CLIENTES) ---
         const canvas = document.getElementById('wheelCanvas');
         const ctx = canvas.getContext('2d');
         let currentAngle = 0;
@@ -774,6 +785,44 @@
             ctx.stroke();
         }
 
+        // --- RULETA MINIATURA (PANEL ADMIN) ---
+        const adminCanvas = document.getElementById('adminWheelCanvas');
+        const adminCtx = adminCanvas ? adminCanvas.getContext('2d') : null;
+        let adminCurrentAngle = 0;
+
+        function drawAdminWheel(angle = 0, participants = []) {
+            if(!adminCanvas || !adminCtx) return;
+            const center = adminCanvas.width / 2;
+            const radius = center - 6;
+            const count = participants.length > 0 ? participants.length : 1;
+            const sliceAngle = (2 * Math.PI) / count;
+
+            adminCtx.clearRect(0, 0, adminCanvas.width, adminCanvas.height);
+
+            for (let i = 0; i < count; i++) {
+                adminCtx.save();
+                adminCtx.beginPath();
+                adminCtx.moveTo(center, center);
+                adminCtx.arc(center, center, radius, angle + i * sliceAngle, angle + (i + 1) * sliceAngle);
+                adminCtx.closePath();
+
+                adminCtx.fillStyle = i % 2 === 0 ? '#4d004d' : '#004d4d';
+                adminCtx.fill();
+                adminCtx.strokeStyle = i % 2 === 0 ? '#ff00ff' : '#00f3ff';
+                adminCtx.lineWidth = 1.5;
+                adminCtx.stroke();
+                adminCtx.restore();
+            }
+
+            adminCtx.beginPath();
+            adminCtx.arc(center, center, 15, 0, 2 * Math.PI);
+            adminCtx.fillStyle = '#050505';
+            adminCtx.fill();
+            adminCtx.lineWidth = 2;
+            adminCtx.strokeStyle = '#39ff14';
+            adminCtx.stroke();
+        }
+
         function playTickSound() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -807,23 +856,27 @@
 
             isSpinning = true;
             document.getElementById('winner-announcement').classList.add('hidden');
+            const adminAnnounce = document.getElementById('admin-winner-announcement');
+            if(adminAnnounce) adminAnnounce.classList.add('hidden');
 
             const count = activeParticipants.length;
             const sliceAngle = (2 * Math.PI) / count;
             
-            // Ángulo exacto hacia la rebanada ganadora
             const targetSliceCenter = winningIndex * sliceAngle + sliceAngle / 2;
             const desiredNormalizedAngle = (2 * Math.PI - targetSliceCenter) % (2 * Math.PI);
             
             let spinTime = 0;
             let spinTimeTotal = 6000;
             let startAngle = currentAngle;
+            let adminStartAngle = adminCurrentAngle;
             let extraSpins = Math.PI * 2 * 10; 
+            
             let currentNormalized = startAngle % (2 * Math.PI);
             let angleDiff = desiredNormalizedAngle - currentNormalized;
             if (angleDiff < 0) angleDiff += Math.PI * 2;
 
             let targetAngle = startAngle + extraSpins + angleDiff;
+            let adminTargetAngle = adminStartAngle + extraSpins + angleDiff;
 
             function easeOutCubic(t) { return (--t) * t * t + 1; }
 
@@ -832,13 +885,18 @@
                 if (spinTime >= spinTimeTotal) {
                     isSpinning = false;
                     currentAngle = targetAngle % (Math.PI * 2);
+                    adminCurrentAngle = adminTargetAngle % (Math.PI * 2);
                     drawWheel(currentAngle, activeParticipants);
+                    drawAdminWheel(adminCurrentAngle, activeParticipants);
                     showWinnerDetails(targetWinningTicket);
                     return;
                 }
                 let progress = spinTime / spinTimeTotal;
                 currentAngle = startAngle + (targetAngle - startAngle) * easeOutCubic(progress);
+                adminCurrentAngle = adminStartAngle + (adminTargetAngle - adminStartAngle) * easeOutCubic(progress);
+                
                 drawWheel(currentAngle, activeParticipants);
+                drawAdminWheel(adminCurrentAngle, activeParticipants);
                 playTickSound();
                 setTimeout(animateSpin, 40);
             }
@@ -849,9 +907,20 @@
             const winningNumStr = String(winningTicketNum).padStart(2, '0');
             const clientInfo = clientDataStore[winningTicketNum] || { name: 'Usuario Desconocido' };
 
+            // Cliente
             document.getElementById('winner-number').innerText = winningNumStr;
             document.getElementById('winner-name-display').innerText = clientInfo.name;
             document.getElementById('winner-announcement').classList.remove('hidden');
+
+            // Admin Panel
+            const adminNum = document.getElementById('admin-winner-num');
+            const adminName = document.getElementById('admin-winner-name');
+            const adminAnnounce = document.getElementById('admin-winner-announcement');
+            if(adminNum && adminName && adminAnnounce) {
+                adminNum.innerText = winningNumStr;
+                adminName.innerText = clientInfo.name;
+                adminAnnounce.classList.remove('hidden');
+            }
 
             confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 }, colors: ['#ff00ff', '#00f3ff', '#39ff14', '#ffffff'] });
         }
