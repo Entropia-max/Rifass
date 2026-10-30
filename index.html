@@ -259,8 +259,14 @@
     <div id="customer-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
         <div class="neon-box-cyan rounded-xl max-w-sm w-full p-6 shadow-2xl">
             <h3 class="text-2xl font-black neon-font neon-text-cyan mb-1 uppercase">Tus Datos</h3>
-            <p class="text-xs font-bold text-slate-400 mb-5">Ingresa identidad para enlazar tus tokens.</p>
+            <p class="text-xs font-bold text-slate-400 mb-4">Ingresa identidad para enlazar tus tokens.</p>
             
+            <!-- AVISO DE COMPROBANTE -->
+            <div class="bg-black/80 border border-[#39ff14] p-3 rounded-sm mb-4 text-[11px] text-slate-300 leading-tight shadow-[0_0_10px_rgba(57,255,20,0.2)]">
+                <span class="text-[#39ff14] font-black block mb-1 uppercase"><i class="fa-brands fa-whatsapp"></i> Importante:</span>
+                Envía tu comprobante de pago al WhatsApp <strong class="text-white font-black">2205154368</strong> para verificar tu pago y liberar/validar tus boletos.
+            </div>
+
             <div class="space-y-4 mb-6">
                 <div>
                     <label class="block text-[10px] font-black text-[#00f3ff] mb-1 uppercase tracking-widest">Nombre Completo</label>
@@ -285,8 +291,14 @@
     <div id="payment-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
         <div class="neon-box-cyan rounded-xl max-w-sm w-full p-6 shadow-2xl text-center">
             <h3 class="text-2xl font-black neon-font neon-text-cyan mb-1 uppercase">Pago Seguro</h3>
-            <p class="text-xs font-bold text-slate-400 mb-6">Protocolo de pago cifrado.</p>
+            <p class="text-xs font-bold text-slate-400 mb-4">Protocolo de pago cifrado.</p>
             
+            <!-- AVISO DE COMPROBANTE PAGO -->
+            <div class="bg-black/80 border border-[#39ff14] p-3 rounded-sm mb-5 text-[11px] text-slate-300 leading-tight text-left shadow-[0_0_10px_rgba(57,255,20,0.2)]">
+                <span class="text-[#39ff14] font-black block mb-1 uppercase"><i class="fa-solid fa-circle-exclamation"></i> Siguiente Paso:</span>
+                Una vez realizado tu pago, manda captura de tu comprobante al número <strong class="text-white font-black">2205154368</strong> para confirmar y validar tus boletos.
+            </div>
+
             <!-- BOTÓN MERCADO PAGO ESTILO CYBERPUNK -->
             <button onclick="payWithMercadoPago()" class="w-full bg-[#009ee3]/10 text-white rounded-sm p-4 border border-[#009ee3] hover:bg-[#009ee3]/20 shadow-[0_0_15px_rgba(0,158,227,0.3)] flex items-center justify-between transition-all mb-4">
                 <div class="flex items-center gap-4">
@@ -862,11 +874,9 @@
             const count = activeParticipants.length;
             const sliceAngle = (2 * Math.PI) / count;
             
-            // CÁLCULO DE ÁNGULO CORREGIDO:
-            // 1) targetSliceCenter calcula el centro exacto de la rebanada ganadora.
-            // 2) Restamos Math.PI / 2 (90 grados) para alinear con el puntero ubicado arriba (12:00 hrs).
+            // CÁLCULO DE ÁNGULO PERFECTAMENTE ALINEADO CON EL PUNTERO SUPERIOR (12:00 hrs)
             const targetSliceCenter = winningIndex * sliceAngle + sliceAngle / 2;
-            const pointerAngle = 3 * Math.PI / 2; // Puntero ubicado a las 12:00 hrs
+            const pointerAngle = 3 * Math.PI / 2; 
             const desiredNormalizedAngle = (pointerAngle - targetSliceCenter + Math.PI * 2) % (Math.PI * 2);
             
             let spinTime = 0;
