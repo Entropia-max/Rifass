@@ -259,14 +259,8 @@
     <div id="customer-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
         <div class="neon-box-cyan rounded-xl max-w-sm w-full p-6 shadow-2xl">
             <h3 class="text-2xl font-black neon-font neon-text-cyan mb-1 uppercase">Tus Datos</h3>
-            <p class="text-xs font-bold text-slate-400 mb-4">Ingresa identidad para enlazar tus tokens.</p>
+            <p class="text-xs font-bold text-slate-400 mb-4">Ingresa identidad para apartar tus tokens.</p>
             
-            <!-- AVISO DE COMPROBANTE -->
-            <div class="bg-black/80 border border-[#39ff14] p-3 rounded-sm mb-4 text-[11px] text-slate-300 leading-tight shadow-[0_0_10px_rgba(57,255,20,0.2)]">
-                <span class="text-[#39ff14] font-black block mb-1 uppercase"><i class="fa-brands fa-whatsapp"></i> Importante:</span>
-                Envía tu comprobante de pago al WhatsApp <strong class="text-white font-black">2205154368</strong> para verificar tu pago y liberar/validar tus boletos.
-            </div>
-
             <div class="space-y-4 mb-6">
                 <div>
                     <label class="block text-[10px] font-black text-[#00f3ff] mb-1 uppercase tracking-widest">Nombre Completo</label>
@@ -280,37 +274,36 @@
 
             <div class="flex flex-col gap-3">
                 <button onclick="proceedToPayment()" class="w-full bg-[#00f3ff]/10 text-[#00f3ff] border border-[#00f3ff] shadow-[0_0_10px_rgba(0,243,255,0.3)] py-3 font-black text-sm rounded-sm uppercase tracking-widest hover:bg-[#00f3ff]/20 transition-all">
-                    Iniciar Transacción
+                    Continuar a Datos Bancarios
                 </button>
                 <button onclick="closeCustomerModal()" class="w-full py-2 text-slate-500 hover:text-slate-300 text-xs font-black uppercase tracking-widest">Abortar</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 2: MÉTODO DE PAGO -->
+    <!-- MODAL 2: TRANSFERENCIA SPEI -->
     <div id="payment-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[60] p-4 backdrop-blur-sm">
         <div class="neon-box-cyan rounded-xl max-w-sm w-full p-6 shadow-2xl text-center">
-            <h3 class="text-2xl font-black neon-font neon-text-cyan mb-1 uppercase">Pago Seguro</h3>
-            <p class="text-xs font-bold text-slate-400 mb-4">Protocolo de pago cifrado.</p>
+            <h3 class="text-2xl font-black neon-font neon-text-cyan mb-1 uppercase">Pago por SPEI</h3>
+            <p class="text-xs font-bold text-slate-400 mb-4">Realiza tu transferencia a los siguientes datos:</p>
             
-            <!-- AVISO DE COMPROBANTE PAGO -->
-            <div class="bg-black/80 border border-[#39ff14] p-3 rounded-sm mb-5 text-[11px] text-slate-300 leading-tight text-left shadow-[0_0_10px_rgba(57,255,20,0.2)]">
-                <span class="text-[#39ff14] font-black block mb-1 uppercase"><i class="fa-solid fa-circle-exclamation"></i> Siguiente Paso:</span>
-                Una vez realizado tu pago, manda captura de tu comprobante al número <strong class="text-white font-black">2205154368</strong> para confirmar y validar tus boletos.
+            <!-- DATOS BANCARIOS -->
+            <div class="bg-black/90 border border-[#00f3ff] p-3 rounded-md mb-4 text-left text-xs space-y-2 shadow-[0_0_10px_rgba(0,243,255,0.2)]">
+                <div><span class="text-slate-400 font-bold">Banco / Institución:</span> <strong class="text-[#00f3ff]">Mercado Pago</strong></div>
+                <div><span class="text-slate-400 font-bold">Beneficiario:</span> <strong class="text-white">Jonathan Rodriguez</strong></div>
+                <div><span class="text-slate-400 font-bold">CLABE Interbancaria:</span><br><strong class="text-[#39ff14] select-all font-mono text-sm">722969020016653756</strong></div>
+                <div><span class="text-slate-400 font-bold">Referencia:</span> <span class="text-white italic">Tu Nombre Completo</span></div>
             </div>
 
-            <!-- BOTÓN MERCADO PAGO ESTILO CYBERPUNK -->
-            <button onclick="payWithMercadoPago()" class="w-full bg-[#009ee3]/10 text-white rounded-sm p-4 border border-[#009ee3] hover:bg-[#009ee3]/20 shadow-[0_0_15px_rgba(0,158,227,0.3)] flex items-center justify-between transition-all mb-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-black border border-[#009ee3] rounded-full flex items-center justify-center text-[#009ee3] text-xl shadow-[0_0_10px_rgba(0,158,227,0.5)]">
-                        <i class="fa-solid fa-credit-card"></i>
-                    </div>
-                    <div class="text-left">
-                        <div class="font-black text-lg text-[#009ee3] tracking-wider">Mercado Pago</div>
-                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Crédito / Débito / Efectivo</div>
-                    </div>
-                </div>
-                <i class="fa-solid fa-chevron-right text-[#009ee3]"></i>
+            <!-- INSTRUCCIÓN WHATSAPP -->
+            <div class="bg-black/80 border border-[#39ff14] p-3 rounded-sm mb-5 text-[11px] text-slate-300 leading-tight text-left shadow-[0_0_10px_rgba(57,255,20,0.2)]">
+                <span class="text-[#39ff14] font-black block mb-1 uppercase"><i class="fa-brands fa-whatsapp"></i> Importante:</span>
+                Manda captura de tu comprobante de pago al WhatsApp <strong class="text-white font-black">2205154368</strong> para que el administrador verifique y valide tus boletos.
+            </div>
+
+            <!-- BOTÓN CONFIRMAR APARTADO -->
+            <button onclick="confirmSPEIPayment()" class="w-full bg-[#39ff14]/20 text-[#39ff14] rounded-sm p-3 border border-[#39ff14] hover:bg-[#39ff14]/30 shadow-[0_0_15px_rgba(57,255,20,0.3)] font-black text-sm uppercase tracking-widest transition-all mb-3">
+                ¡Ya realicé mi transferencia!
             </button>
 
             <button onclick="closePaymentModal()" class="w-full py-2 text-slate-500 hover:text-slate-300 text-xs font-black uppercase tracking-widest">Regresar</button>
@@ -365,13 +358,13 @@
                     </div>
                 </div>
 
-                <!-- Gestor de Boletos Vendidos -->
+                <!-- Gestor de Boletos Vendidos / Apartados -->
                 <div class="border-t border-[#333] pt-3">
                     <h4 class="font-black text-slate-300 mb-2 flex justify-between text-xs uppercase tracking-widest">
-                        <span>Pendientes:</span>
+                        <span>Pendientes (Apartados):</span>
                         <span id="admin-apartados-count" class="neon-text-magenta">0</span>
                     </h4>
-                    <div id="admin-apartados-list" class="max-h-28 overflow-y-auto space-y-2 border border-[#333] p-2 rounded-sm bg-black">
+                    <div id="admin-apartados-list" class="max-h-36 overflow-y-auto space-y-2 border border-[#333] p-2 rounded-sm bg-black">
                     </div>
                 </div>
 
@@ -615,7 +608,7 @@
             document.getElementById('payment-modal').classList.add('hidden');
         }
 
-        window.payWithMercadoPago = async function() {
+        window.confirmSPEIPayment = async function() {
             const name = document.getElementById('client-name').value;
             const wats = document.getElementById('client-whatsapp').value;
             
@@ -628,7 +621,7 @@
             selectedTickets = [];
             renderTickets();
             closePaymentModal();
-            window.location.href = 'https://mpago.la/1AbhKAz';
+            alert('¡Boletos apartados con éxito! Recuerda mandar tu comprobante al WhatsApp 2205154368 para que el administrador los valide.');
         }
 
         // Panel Administrador
@@ -677,9 +670,14 @@
                             <span class="font-black text-[#00f3ff] neon-font">#${numStr}</span> - <span class="font-bold text-slate-300">${client.name}</span>
                             <div class="text-[9px] text-slate-500 uppercase tracking-widest">Wa: ${client.whatsapp}</div>
                         </div>
-                        <button onclick="markAsSold(${i})" class="bg-[#00f3ff]/10 hover:bg-[#00f3ff]/30 border border-[#00f3ff] text-[#00f3ff] px-2 py-1 rounded-sm font-black uppercase text-[9px] transition-all">
-                            Validar
-                        </button>
+                        <div class="flex gap-1">
+                            <button onclick="markAsSold(${i})" class="bg-[#00f3ff]/10 hover:bg-[#00f3ff]/30 border border-[#00f3ff] text-[#00f3ff] px-2 py-1 rounded-sm font-black uppercase text-[9px] transition-all" title="Validar Pago">
+                                Validar
+                            </button>
+                            <button onclick="deleteApartado(${i})" class="bg-red-900/20 hover:bg-red-900/40 border border-red-900 text-red-500 px-2 py-1 rounded-sm font-black uppercase text-[9px] transition-all" title="Liberar / Eliminar Boleto">
+                                Eliminar
+                            </button>
+                        </div>
                     `;
                     listContainer.appendChild(div);
                 }
@@ -687,7 +685,7 @@
 
             countBadge.innerText = apartadosCount;
             if (apartadosCount === 0) {
-                listContainer.innerHTML = `<p class="text-slate-600 text-center py-2 font-bold text-[10px] uppercase tracking-widest">Sin registros</p>`;
+                listContainer.innerHTML = `<p class="text-slate-600 text-center py-2 font-bold text-[10px] uppercase tracking-widest">Sin registros pendientes</p>`;
             }
         }
 
@@ -696,6 +694,16 @@
             await saveDataToCloud();
             renderTickets();
             renderAdminApartadosList();
+        }
+
+        window.deleteApartado = async function(index) {
+            if (confirm(`¿Liberar y eliminar el boleto #${String(index).padStart(2, '0')}? Volverá a estar libre.`)) {
+                ticketsState[index] = 'libre';
+                delete clientDataStore[index];
+                await saveDataToCloud();
+                renderTickets();
+                renderAdminApartadosList();
+            }
         }
 
         window.saveAdminSettings = async function() {
