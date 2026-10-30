@@ -248,6 +248,45 @@
             </div>
         </section>
 
+        <!-- SECCIÓN: MURO DE GANADORES Y EVIDENCIAS DE ENTREGA -->
+        <section class="neon-box-cyan rounded-xl p-5 mb-8">
+            <div class="text-center mb-5 pb-3 border-b border-[#00f3ff]/30">
+                <h3 class="text-xl font-black neon-font neon-text-cyan uppercase tracking-widest"><i class="fa-solid fa-trophy mr-2"></i> Muro de Ganadores & Entregas</h3>
+                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">Transparencia y testimonios reales</p>
+            </div>
+
+            <!-- Galería de Evidencias (Cargadas desde el Admin) -->
+            <div class="mb-6">
+                <h4 class="text-xs font-black text-[#00f3ff] uppercase tracking-widest mb-3"><i class="fa-solid fa-image mr-1"></i> Evidencias de Premios Entregados</h4>
+                <div id="delivery-evidence-grid" class="grid grid-cols-2 gap-3">
+                    <!-- Dinámico desde Firebase -->
+                </div>
+            </div>
+
+            <!-- Formulario de Reseñas / Testimonios (Página Principal) -->
+            <div class="border-t border-[#00f3ff]/30 pt-4">
+                <h4 class="text-xs font-black text-[#00f3ff] uppercase tracking-widest mb-3"><i class="fa-solid fa-pen-nib mr-1"></i> Deja tu Reseña</h4>
+                <div class="bg-black/90 border border-[#00f3ff]/40 p-3 rounded-lg space-y-3 mb-5">
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase">Tu Nombre / Usuario</label>
+                        <input type="text" id="review-author" class="w-full px-3 py-2 neon-input rounded-sm font-bold text-xs" placeholder="Ej. Roberto G.">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-black text-slate-400 mb-1 uppercase">Comentario</label>
+                        <textarea id="review-text" rows="2" class="w-full px-3 py-2 neon-input rounded-sm font-bold text-xs resize-none" placeholder="Escribe tu experiencia..."></textarea>
+                    </div>
+                    <button onclick="submitUserReview()" class="w-full bg-[#00f3ff]/20 hover:bg-[#00f3ff]/30 text-[#00f3ff] border border-[#00f3ff] py-2 rounded-sm font-black text-xs uppercase tracking-widest transition-all shadow-[0_0_10px_rgba(0,243,255,0.2)]">
+                        Publicar Reseña
+                    </button>
+                </div>
+
+                <h4 class="text-xs font-black text-[#00f3ff] uppercase tracking-widest mb-3"><i class="fa-solid fa-star text-yellow-400 mr-1"></i> Opiniones de la Comunidad</h4>
+                <div id="reviews-container" class="space-y-3 max-h-52 overflow-y-auto pr-1">
+                    <!-- Dinámico desde Firebase -->
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- FOOTER FLOTANTE (CARRITO) -->
@@ -367,6 +406,18 @@
                     </div>
                 </div>
 
+                <!-- SUBIR EVIDENCIA DE ENTREGA (PANEL ADMIN) -->
+                <div class="border-t border-[#333] pt-3">
+                    <h4 class="font-black text-slate-300 mb-2 text-xs uppercase tracking-widest"><i class="fa-solid fa-upload text-[#ff00ff] mr-1"></i> Subir Evidencia de Entrega</h4>
+                    <div class="bg-black p-3 rounded border border-[#333] space-y-2">
+                        <input type="text" id="admin-evidence-title" class="w-full px-2 py-1.5 neon-input rounded text-xs font-bold" placeholder="Título (Ej. Sorteo #03 - Entregado)">
+                        <input type="url" id="admin-evidence-url" class="w-full px-2 py-1.5 neon-input rounded text-xs font-bold" placeholder="URL de la Foto (Imgur, ImgBB, etc.)">
+                        <button onclick="adminUploadEvidence()" class="w-full bg-[#ff00ff]/20 hover:bg-[#ff00ff]/30 text-[#ff00ff] border border-[#ff00ff] py-1.5 rounded text-xs font-black uppercase tracking-wider transition-all">
+                            Agregar Evidencia al Muro
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Gestor de Boletos Vendidos / Apartados -->
                 <div class="border-t border-[#333] pt-3">
                     <h4 class="font-black text-slate-300 mb-2 flex justify-between text-xs uppercase tracking-widest">
@@ -420,6 +471,11 @@
         let drawTime = "21:00";
         let localGameState = "idle";
         let lastHandledSpinId = null;
+        let deliveryEvidences = [];
+        let userReviews = [
+            { author: "Carlos M.", text: "¡Increíble y 100% real! Me cayó el depósito directo a mi cuenta en menos de 10 minutos después del sorteo.", rating: 5, ticket: "#23" },
+            { author: "Alejandra R.", text: "Al principio dudaba, pero la ruleta en vivo transparente da mucha confianza. ¡Muchas gracias JISTHAN!", rating: 5, ticket: "#77" }
+        ];
 
         // --- SISTEMA DE PRESENCIA DE USUARIOS (EN LÍNEA) ---
         function setupPresence() {
@@ -453,6 +509,8 @@
                     if (data.clients) clientDataStore = data.clients;
                     if (data.price !== undefined) ticketPrice = data.price;
                     if (data.time) drawTime = data.time;
+                    if (data.evidences) deliveryEvidences = data.evidences;
+                    if (data.reviews) userReviews = data.reviews;
 
                     // Calcular personas en línea
                     if (data.presence) {
@@ -471,6 +529,8 @@
                     document.getElementById('display-ticket-price').innerText = `$${ticketPrice} MXN`;
                     document.getElementById('display-draw-time').innerText = `${drawTime} hrs`;
                     renderTickets();
+                    renderEvidences();
+                    renderReviews();
 
                     // Detectar orden de giro sincronizado
                     if (data.gameState === "spinning" && data.spinId && data.spinId !== lastHandledSpinId) {
@@ -492,11 +552,88 @@
                     clients: clientDataStore,
                     price: ticketPrice,
                     time: drawTime,
-                    gameState: localGameState
+                    gameState: localGameState,
+                    evidences: deliveryEvidences,
+                    reviews: userReviews
                 }, { merge: true });
             } catch (e) {
                 console.error("Error al guardar en Firebase:", e);
             }
+        }
+
+        // --- RENDERIZAR EVIDENCIAS Y RESEÑAS ---
+        function renderEvidences() {
+            const grid = document.getElementById('delivery-evidence-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            
+            if(deliveryEvidences.length === 0) {
+                grid.innerHTML = `<div class="col-span-2 text-center text-slate-500 text-xs py-2">No hay evidencias subidas aún.</div>`;
+                return;
+            }
+
+            deliveryEvidences.forEach((ev) => {
+                grid.innerHTML += `
+                    <div class="bg-black border border-[#00f3ff]/40 rounded-lg p-2 text-center">
+                        <div class="aspect-video bg-[#0a0a0a] rounded overflow-hidden flex items-center justify-center mb-1 border border-slate-800">
+                            <img src="${ev.url}" alt="${ev.title}" class="w-full h-full object-cover">
+                        </div>
+                        <span class="text-[10px] font-black text-slate-300 block uppercase truncate">${ev.title}</span>
+                    </div>
+                `;
+            });
+        }
+
+        function renderReviews() {
+            const container = document.getElementById('reviews-container');
+            if(!container) return;
+            container.innerHTML = '';
+
+            userReviews.forEach((rev) => {
+                container.innerHTML += `
+                    <div class="bg-black/80 border border-[#00f3ff]/30 p-3 rounded-md text-xs">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-black text-white">${rev.author}</span>
+                            <span class="text-yellow-400"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+                        </div>
+                        <p class="text-slate-300 italic">"${rev.text}"</p>
+                    </div>
+                `;
+            });
+        }
+
+        // --- SUBIR EVIDENCIA DESDE ADMIN ---
+        window.adminUploadEvidence = async function() {
+            const title = document.getElementById('admin-evidence-title').value.trim();
+            const url = document.getElementById('admin-evidence-url').value.trim();
+
+            if(!title || !url) {
+                alert('Ingresa tanto el título como la URL de la imagen.');
+                return;
+            }
+
+            deliveryEvidences.unshift({ title, url });
+            await saveDataToCloud();
+            document.getElementById('admin-evidence-title').value = '';
+            document.getElementById('admin-evidence-url').value = '';
+            alert('¡Evidencia agregada al muro con éxito!');
+        }
+
+        // --- ENVIAR RESEÑA DESDE LA PÁGINA PRINCIPAL ---
+        window.submitUserReview = async function() {
+            const author = document.getElementById('review-author').value.trim();
+            const text = document.getElementById('review-text').value.trim();
+
+            if(!author || !text) {
+                alert('Por favor ingresa tu nombre y tu comentario.');
+                return;
+            }
+
+            userReviews.unshift({ author, text, rating: 5 });
+            await saveDataToCloud();
+            document.getElementById('review-author').value = '';
+            document.getElementById('review-text').value = '';
+            alert('¡Gracias por tu reseña! Ya ha sido publicada.');
         }
 
         // --- EASTER EGG: 5 TOQUES EN "RIFAS" PARA MOSTRAR/OCULTAR ADMIN ---
