@@ -421,6 +421,7 @@
                     <div id="admin-winner-announcement" class="hidden mt-2 bg-black/80 p-2 rounded border border-[#39ff14]">
                         <div class="text-[10px] font-black text-[#39ff14] uppercase">Ganador: <span id="admin-winner-name" class="text-white">--</span></div>
                         <div class="text-xs font-bold text-slate-300 uppercase">Token: <span id="admin-winner-num" class="neon-text-green neon-font">--</span></div>
+                        <div class="text-[11px] font-bold text-[#00f3ff] uppercase mt-1">WhatsApp: <span id="admin-winner-whatsapp" class="text-white">--</span></div>
                     </div>
                 </div>
 
@@ -515,7 +516,7 @@
         let deliveryEvidences = [];
         let userReviews = []; // Vacío por defecto
 
-        // Función auxiliar para formato 12 horas (ej: 09:00 pm)
+        // Formato 12 horas (ej: 09:00 pm)
         function format12Hour(time24) {
             if (!time24) return "09:00 pm";
             let parts = time24.split(':');
@@ -1057,7 +1058,7 @@
             }
         }
 
-        // --- DISPARADOR ADMIN: GENERA GANADOR Y SINCRONIZA SIN CERRAR PANEL ---
+        // --- DISPARADOR ADMIN: GENERA GANADOR Y MUESTRA WHATSAPP ---
         window.triggerRouletteFromAdmin = async function() {
             let activeParticipants = [];
             for (let i = 0; i < totalTickets; i++) {
@@ -1254,18 +1255,23 @@
 
         function showWinnerDetails(winningTicketNum) {
             const winningNumStr = String(winningTicketNum).padStart(2, '0');
-            const clientInfo = clientDataStore[winningTicketNum] || { name: 'Usuario Desconocido' };
+            const clientInfo = clientDataStore[winningTicketNum] || { name: 'Usuario Desconocido', whatsapp: '--' };
 
+            // Cliente (Pantalla principal)
             document.getElementById('winner-number').innerText = winningNumStr;
             document.getElementById('winner-name-display').innerText = clientInfo.name;
             document.getElementById('winner-announcement').classList.remove('hidden');
 
+            // Admin Panel
             const adminNum = document.getElementById('admin-winner-num');
             const adminName = document.getElementById('admin-winner-name');
+            const adminWats = document.getElementById('admin-winner-whatsapp');
             const adminAnnounce = document.getElementById('admin-winner-announcement');
-            if(adminNum && adminName && adminAnnounce) {
+            
+            if(adminNum && adminName && adminWats && adminAnnounce) {
                 adminNum.innerText = winningNumStr;
                 adminName.innerText = clientInfo.name;
+                adminWats.innerText = clientInfo.whatsapp;
                 adminAnnounce.classList.remove('hidden');
             }
 
