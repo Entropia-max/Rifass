@@ -306,12 +306,12 @@
 
     </main>
 
-    <!-- MODAL DE FOTO COMPLETA (LIGHTBOX) -->
+    <!-- MODAL DE FOTO COMPLETA (LIGHTBOX CORREGIDO) -->
     <div id="lightbox-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[70] p-4 backdrop-blur-md">
         <div class="relative max-w-2xl w-full flex flex-col items-center bg-[#050505] border-2 border-[#00f3ff] p-4 rounded-xl shadow-[0_0_30px_rgba(0,243,255,0.4)]" onclick="event.stopPropagation()">
             <button onclick="closeLightbox()" class="absolute -top-4 -right-4 bg-black text-white hover:text-[#00f3ff] w-10 h-10 rounded-full border-2 border-[#00f3ff] text-xl font-black flex items-center justify-center shadow-lg"><i class="fa-solid fa-xmark"></i></button>
             <div class="w-full max-h-[70vh] flex items-center justify-center overflow-hidden rounded-lg mb-3 bg-black">
-                <img id="lightbox-img" src="" alt="" class="max-h-[65vh] max-w-full object-contain">
+                <img id="lightbox-img" src="" alt="Evidencia Ampliada" class="max-h-[65vh] max-w-full object-contain">
             </div>
             <h3 id="lightbox-title" class="text-sm md:text-base font-black neon-font neon-text-cyan text-center uppercase tracking-widest"></h3>
         </div>
@@ -562,20 +562,30 @@
             return `${formattedHours}:${minutes} ${ampm}`;
         }
 
-        // --- LIGHTBOX PARA FOTOS GRANDES ---
+        // --- LIGHTBOX CORREGIDO (VISOR DE FOTO) ---
         window.openLightbox = function(url, title) {
-            document.getElementById('lightbox-img').src = url;
-            document.getElementById('lightbox-title').innerText = title;
             const modal = document.getElementById('lightbox-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            const img = document.getElementById('lightbox-img');
+            const titleElem = document.getElementById('lightbox-title');
+            
+            if(img) img.src = url;
+            if(titleElem) titleElem.innerText = title || 'Evidencia de Sorteo';
+            
+            if(modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
         }
 
         window.closeLightbox = function() {
             const modal = document.getElementById('lightbox-modal');
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
-            document.getElementById('lightbox-img').src = '';
+            const img = document.getElementById('lightbox-img');
+            
+            if(modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+            if(img) img.src = '';
         }
 
         // --- CANDADO DE SEGURIDAD RULETA ---
@@ -706,7 +716,16 @@
                     if (data.clients) clientDataStore = data.clients;
                     if (data.price !== undefined) ticketPrice = data.price;
                     if (data.time) drawTime = data.time;
-                    if (data.evidences) deliveryEvidences = data.evidences;
+                    
+                    // Limpieza automática de datos sucios o dañados en evidencias
+                    if (data.evidences) {
+                        deliveryEvidences = data.evidences.map(ev => {
+                            let cleanTitle = typeof ev.title === 'string' ? ev.title.replace(/['\)\]>]+/g, '').trim() : 'Sorteo';
+                            let cleanUrl = typeof ev.url === 'string' ? ev.url.replace(/['\)\]>]+/g, '').trim() : '';
+                            return { title: cleanTitle, url: cleanUrl };
+                        }).filter(ev => ev.url.startsWith('http'));
+                    }
+
                     if (data.reviews) userReviews = data.reviews;
                     if (data.rouletteLocked !== undefined) rouletteLocked = data.rouletteLocked;
 
@@ -782,7 +801,7 @@
             }
         }
 
-        // --- RENDERIZAR EVIDENCIAS (FOTOS GRANDES Y LIMPIAS) ---
+        // --- RENDERIZAR EVIDENCIAS (LIMPIO Y BLINDADO) ---
         function renderEvidences() {
             const grid = document.getElementById('delivery-evidence-grid');
             if(!grid) return;
@@ -794,15 +813,20 @@
             }
 
             deliveryEvidences.forEach((ev) => {
+                if (!ev.url || !ev.url.startsWith('http')) return;
+                
                 const div = document.createElement('div');
                 div.className = "bg-black border-2 border-[#00f3ff]/60 rounded-xl p-3 text-center cursor-pointer hover:border-[#00f3ff] transition-all shadow-[0_0_15px_rgba(0,243,255,0.2)]";
-                div.onclick = () => openLightbox(ev.url, ev.title);
+                
+                div.onclick = function() {
+                    openLightbox(ev.url, ev.title);
+                };
                 
                 div.innerHTML = `
-                    <div class="w-full aspect-[4/3] bg-[#0a0a0a] rounded-lg overflow-hidden flex items-center justify-center mb-2 border border-slate-800">
-                        <img src="${ev.url}" alt="${ev.title}" class="w-full h-full object-cover">
+                    <div class="w-full aspect-[4/3] bg-[#0a0a0a] rounded-lg overflow-hidden flex items-center justify-center mb-2 border border-slate-800 pointer-events-none">
+                        <img src="${ev.url}" alt="Evidencia" class="w-full h-full object-cover">
                     </div>
-                    <span class="text-xs md:text-sm font-black text-white uppercase tracking-wider block"><i class="fa-solid fa-expand text-[#00f3ff] mr-1"></i> ${ev.title}</span>
+                    <span class="text-xs md:text-sm font-black text-white uppercase tracking-wider block pointer-events-none"><i class="fa-solid fa-expand text-[#00f3ff] mr-1"></i> ${ev.title}</span>
                 `;
                 grid.appendChild(div);
             });
@@ -908,8 +932,11 @@
 
         // --- SUBIR EVIDENCIA DESDE ADMIN ---
         window.adminUploadEvidence = async function() {
-            const title = document.getElementById('admin-evidence-title').value.trim();
-            const url = document.getElementById('admin-evidence-url').value.trim();
+            let title = document.getElementById('admin-evidence-title').value.trim();
+            let url = document.getElementById('admin-evidence-url').value.trim();
+
+            title = title.replace(/['\)\]>]+/g, '').trim();
+            url = url.replace(/['\)\]>]+/g, '').trim();
 
             if(!title || !url) {
                 alert('Ingresa tanto el título como la URL de la imagen.');
