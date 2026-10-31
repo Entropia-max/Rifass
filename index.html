@@ -717,13 +717,28 @@
                     if (data.price !== undefined) ticketPrice = data.price;
                     if (data.time) drawTime = data.time;
                     
-                    // Limpieza automática de datos sucios o dañados en evidencias
+                    // Limpieza y extracción inteligente de URLs de imágenes
                     if (data.evidences) {
                         deliveryEvidences = data.evidences.map(ev => {
-                            let cleanTitle = typeof ev.title === 'string' ? ev.title.replace(/['\)\]>]+/g, '').trim() : 'Sorteo';
-                            let cleanUrl = typeof ev.url === 'string' ? ev.url.replace(/['\)\]>]+/g, '').trim() : '';
+                            let cleanTitle = typeof ev.title === 'string' ? ev.title : 'Sorteo';
+                            let cleanUrl = typeof ev.url === 'string' ? ev.url : '';
+                            
+                            // Extraer el enlace real si se pegó código HTML (ej. <img src="...">) o basura extra
+                            const srcMatch = cleanUrl.match(/src=["']?(http[^"'\s>]+)["']?/);
+                            if (srcMatch) {
+                                cleanUrl = srcMatch[1];
+                            } else {
+                                const httpMatch = cleanUrl.match(/(http[^"'\s>]+)/);
+                                if (httpMatch) {
+                                    cleanUrl = httpMatch[1];
+                                }
+                            }
+                            
+                            // Limpiar el título de posibles etiquetas
+                            cleanTitle = cleanTitle.replace(/[<>]/g, '').trim();
+
                             return { title: cleanTitle, url: cleanUrl };
-                        }).filter(ev => ev.url.startsWith('http'));
+                        }).filter(ev => ev && ev.url.startsWith('http'));
                     }
 
                     if (data.reviews) userReviews = data.reviews;
@@ -935,11 +950,21 @@
             let title = document.getElementById('admin-evidence-title').value.trim();
             let url = document.getElementById('admin-evidence-url').value.trim();
 
-            title = title.replace(/['\)\]>]+/g, '').trim();
-            url = url.replace(/['\)\]>]+/g, '').trim();
+            // Extraer enlace inteligente por si pegan todo el tag <img>
+            const srcMatch = url.match(/src=["']?(http[^"'\s>]+)["']?/);
+            if (srcMatch) {
+                url = srcMatch[1];
+            } else {
+                const httpMatch = url.match(/(http[^"'\s>]+)/);
+                if (httpMatch) {
+                    url = httpMatch[1];
+                }
+            }
 
-            if(!title || !url) {
-                alert('Ingresa tanto el título como la URL de la imagen.');
+            title = title.replace(/[<>]/g, '').trim();
+
+            if(!title || !url || !url.startsWith('http')) {
+                alert('Por favor ingresa un título y un enlace válido de imagen (debe empezar con http).');
                 return;
             }
 
