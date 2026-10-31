@@ -265,17 +265,17 @@
             </div>
         </section>
 
-        <!-- SECCIÓN: MURO DE GANADORES Y EVIDENCIAS DE ENTREGA -->
+        <!-- SECCIÓN: MURO DE GANADORES Y EVIDENCIAS DE ENTREGA (MÁS GRANDE) -->
         <section class="neon-box-cyan rounded-xl p-5 mb-8">
             <div class="text-center mb-5 pb-3 border-b border-[#00f3ff]/30">
                 <h3 class="text-xl font-black neon-font neon-text-cyan uppercase tracking-widest"><i class="fa-solid fa-trophy mr-2"></i> Muro de Ganadores & Entregas</h3>
                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-1">Transparencia y testimonios reales</p>
             </div>
 
-            <!-- Galería de Evidencias (Cargadas desde el Admin) -->
+            <!-- Galería de Evidencias (Fotos Grandes a 1 columna para destacar) -->
             <div class="mb-6">
                 <h4 class="text-xs font-black text-[#00f3ff] uppercase tracking-widest mb-3"><i class="fa-solid fa-image mr-1"></i> Evidencias de Premios Entregados</h4>
-                <div id="delivery-evidence-grid" class="grid grid-cols-2 gap-3">
+                <div id="delivery-evidence-grid" class="space-y-4">
                     <!-- Dinámico desde Firebase -->
                 </div>
             </div>
@@ -305,6 +305,15 @@
         </section>
 
     </main>
+
+    <!-- MODAL DE FOTO COMPLETA (LIGHTBOX) -->
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-[70] p-4 backdrop-blur-md" onclick="closeLightbox()">
+        <div class="relative max-w-2xl w-full flex flex-col items-center" onclick="event.stopPropagation()">
+            <button onclick="closeLightbox()" class="absolute -top-10 right-0 text-white hover:text-[#00f3ff] text-3xl font-black"><i class="fa-solid fa-xmark"></i></button>
+            <img id="lightbox-img" src="" alt="" class="w-full max-h-[75vh] object-contain rounded-lg border-2 border-[#00f3ff] shadow-[0_0_30px_rgba(0,243,255,0.4)] mb-3">
+            <h3 id="lightbox-title" class="text-lg md:text-xl font-black neon-font neon-text-cyan text-center uppercase tracking-widest"></h3>
+        </div>
+    </div>
 
     <!-- FOOTER FLOTANTE (CARRITO) -->
     <div id="floating-cart" class="fixed bottom-0 left-0 right-0 bg-[rgba(5,5,5,0.95)] backdrop-blur-md border-t border-[#ff00ff] px-4 py-4 shadow-[0_-10px_30px_rgba(255,0,255,0.2)] transform translate-y-full transition-transform duration-300 z-50">
@@ -436,6 +445,16 @@
                     </div>
                 </div>
 
+                <!-- CANDADO DE SEGURIDAD PARA LA RULETA -->
+                <div class="bg-black border border-[#00f3ff] p-3 rounded-md flex items-center justify-between shadow-[0_0_10px_rgba(0,243,255,0.2)]">
+                    <span class="text-xs font-black text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                        <i id="lock-icon" class="fa-solid fa-lock text-[#00f3ff]"></i> Candado Ruleta:
+                    </span>
+                    <button id="roulette-lock-btn" onclick="toggleRouletteLock()" class="bg-[#00f3ff]/20 hover:bg-[#00f3ff]/30 text-[#00f3ff] border border-[#00f3ff] px-3 py-1 rounded text-xs font-black uppercase tracking-wider transition-all">
+                        Bloqueado
+                    </button>
+                </div>
+
                 <!-- SUBIR EVIDENCIA DE ENTREGA (PANEL ADMIN) -->
                 <div class="border-t border-[#333] pt-3">
                     <h4 class="font-black text-slate-300 mb-2 text-xs uppercase tracking-widest"><i class="fa-solid fa-upload text-[#ff00ff] mr-1"></i> Subir Evidencia de Entrega</h4>
@@ -448,13 +467,24 @@
                     </div>
                 </div>
 
+                <!-- GESTOR / BORRADOR DE GANADORES (EVIDENCIAS) -->
+                <div class="border-t border-[#333] pt-3">
+                    <h4 class="font-black text-slate-300 mb-2 flex justify-between text-xs uppercase tracking-widest">
+                        <span>Gestionar Ganadores (Evidencias):</span>
+                        <span id="admin-evidences-count" class="neon-text-magenta">0</span>
+                    </h4>
+                    <div id="admin-evidences-list" class="max-h-28 overflow-y-auto space-y-2 border border-[#333] p-2 rounded-sm bg-black">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+
                 <!-- GESTOR DE RESEÑAS (PANEL ADMIN) -->
                 <div class="border-t border-[#333] pt-3">
                     <h4 class="font-black text-slate-300 mb-2 flex justify-between text-xs uppercase tracking-widest">
                         <span>Gestionar Reseñas:</span>
                         <span id="admin-reviews-count" class="neon-text-magenta">0</span>
                     </h4>
-                    <div id="admin-reviews-list" class="max-h-32 overflow-y-auto space-y-2 border border-[#333] p-2 rounded-sm bg-black">
+                    <div id="admin-reviews-list" class="max-h-28 overflow-y-auto space-y-2 border border-[#333] p-2 rounded-sm bg-black">
                         <!-- Dinámico -->
                     </div>
                 </div>
@@ -514,7 +544,8 @@
         let lastHandledSpinId = null;
         let lastHandledAudioId = null;
         let deliveryEvidences = [];
-        let userReviews = []; // Vacío por defecto
+        let userReviews = [];
+        let rouletteLocked = true; // Candado activo por default
 
         // Formato 12 horas (ej: 09:00 pm)
         function format12Hour(time24) {
@@ -527,6 +558,41 @@
             hours = hours ? hours : 12;
             let formattedHours = hours < 10 ? '0' + hours : hours;
             return `${formattedHours}:${minutes} ${ampm}`;
+        }
+
+        // --- LIGHTBOX PARA FOTOS GRANDES ---
+        window.openLightbox = function(url, title) {
+            document.getElementById('lightbox-img').src = url;
+            document.getElementById('lightbox-title').innerText = title;
+            document.getElementById('lightbox-modal').classList.remove('hidden');
+            document.getElementById('lightbox-modal').classList.add('flex');
+        }
+
+        window.closeLightbox = function() {
+            document.getElementById('lightbox-modal').classList.remove('flex');
+            document.getElementById('lightbox-modal').classList.add('hidden');
+        }
+
+        // --- CANDADO DE SEGURIDAD RULETA ---
+        window.toggleRouletteLock = async function() {
+            rouletteLocked = !rouletteLocked;
+            await saveDataToCloud();
+            updateLockUI();
+        }
+
+        function updateLockUI() {
+            const btn = document.getElementById('roulette-lock-btn');
+            const icon = document.getElementById('lock-icon');
+            if(!btn) return;
+            if(rouletteLocked) {
+                btn.innerText = "Bloqueado";
+                btn.className = "bg-red-900/20 hover:bg-red-900/40 text-red-500 border border-red-900 px-3 py-1 rounded text-xs font-black uppercase tracking-wider transition-all";
+                icon.className = "fa-solid fa-lock text-red-500";
+            } else {
+                btn.innerText = "Desbloqueado";
+                btn.className = "bg-[#39ff14]/20 hover:bg-[#39ff14]/30 text-[#39ff14] border border-[#39ff14] px-3 py-1 rounded text-xs font-black uppercase tracking-wider transition-all";
+                icon.className = "fa-solid fa-lock-open text-[#39ff14]";
+            }
         }
 
         // --- GRABACIÓN Y BORRADO DE AUDIO WALKIE-TALKIE ---
@@ -637,6 +703,7 @@
                     if (data.time) drawTime = data.time;
                     if (data.evidences) deliveryEvidences = data.evidences;
                     if (data.reviews) userReviews = data.reviews;
+                    if (data.rouletteLocked !== undefined) rouletteLocked = data.rouletteLocked;
 
                     const isAdminPanelOpen = !document.getElementById('admin-modal').classList.contains('hidden');
                     
@@ -666,10 +733,20 @@
                     document.getElementById('admin-time-input').value = drawTime;
                     document.getElementById('display-ticket-price').innerText = `$${ticketPrice} MXN`;
                     document.getElementById('display-draw-time').innerText = format12Hour(drawTime);
+                    
+                    updateLockUI();
                     renderTickets();
                     renderEvidences();
                     renderReviews();
                     renderAdminReviewsList();
+                    renderAdminEvidencesList();
+
+                    // Limpiar anuncio ganador si se reseteó
+                    if (!data.lastWinner || data.gameState === "idle") {
+                        document.getElementById('winner-announcement').classList.add('hidden');
+                        const adminAnnounce = document.getElementById('admin-winner-announcement');
+                        if(adminAnnounce) adminAnnounce.classList.add('hidden');
+                    }
 
                     if (data.gameState === "spinning" && data.spinId && data.spinId !== lastHandledSpinId) {
                         lastHandledSpinId = data.spinId;
@@ -692,31 +769,32 @@
                     time: drawTime,
                     gameState: localGameState,
                     evidences: deliveryEvidences,
-                    reviews: userReviews
+                    reviews: userReviews,
+                    rouletteLocked: rouletteLocked
                 }, { merge: true });
             } catch (e) {
                 console.error("Error al guardar en Firebase:", e);
             }
         }
 
-        // --- RENDERIZAR EVIDENCIAS Y RESEÑAS ---
+        // --- RENDERIZAR EVIDENCIAS (FOTOS GRANDES) ---
         function renderEvidences() {
             const grid = document.getElementById('delivery-evidence-grid');
             if(!grid) return;
             grid.innerHTML = '';
             
             if(deliveryEvidences.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 text-center text-slate-500 text-xs py-2">No hay evidencias subidas aún.</div>`;
+                grid.innerHTML = `<div class="text-center text-slate-500 text-xs py-4">No hay evidencias subidas aún.</div>`;
                 return;
             }
 
             deliveryEvidences.forEach((ev) => {
                 grid.innerHTML += `
-                    <div class="bg-black border border-[#00f3ff]/40 rounded-lg p-2 text-center">
-                        <div class="aspect-video bg-[#0a0a0a] rounded overflow-hidden flex items-center justify-center mb-1 border border-slate-800">
+                    <div class="bg-black border-2 border-[#00f3ff]/60 rounded-xl p-3 text-center cursor-pointer hover:border-[#00f3ff] transition-all shadow-[0_0_15px_rgba(0,243,255,0.2)]" onclick="openLightbox('${ev.url}', '${ev.title}')">
+                        <div class="w-full aspect-[4/3] bg-[#0a0a0a] rounded-lg overflow-hidden flex items-center justify-center mb-2 border border-slate-800">
                             <img src="${ev.url}" alt="${ev.title}" class="w-full h-full object-cover">
                         </div>
-                        <span class="text-[10px] font-black text-slate-300 block uppercase truncate">${ev.title}</span>
+                        <span class="text-xs md:text-sm font-black text-white uppercase tracking-wider block"><i class="fa-solid fa-expand text-[#00f3ff] mr-1"></i> ${ev.title}</span>
                     </div>
                 `;
             });
@@ -754,7 +832,7 @@
             countBadge.innerText = userReviews.length;
 
             if(userReviews.length === 0) {
-                listContainer.innerHTML = `<p class="text-slate-600 text-center py-2 font-bold text-[10px] uppercase tracking-widest">Sin reseñas publicadas</p>`;
+                listContainer.innerHTML = `<p class="text-slate-600 text-center py-2 font-bold text-[10px] uppercase tracking-widest">Sin reseñas</p>`;
                 return;
             }
 
@@ -774,12 +852,49 @@
             });
         }
 
+        function renderAdminEvidencesList() {
+            const listContainer = document.getElementById('admin-evidences-list');
+            const countBadge = document.getElementById('admin-evidences-count');
+            if(!listContainer) return;
+            listContainer.innerHTML = '';
+
+            countBadge.innerText = deliveryEvidences.length;
+
+            if(deliveryEvidences.length === 0) {
+                listContainer.innerHTML = `<p class="text-slate-600 text-center py-2 font-bold text-[10px] uppercase tracking-widest">Sin ganadores subidos</p>`;
+                return;
+            }
+
+            deliveryEvidences.forEach((ev, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between bg-[#111] p-2 rounded-sm border border-[#333] text-xs shadow-sm';
+                div.innerHTML = `
+                    <div class="overflow-hidden pr-2">
+                        <span class="font-black text-[#ff00ff]">${ev.title}</span>
+                    </div>
+                    <button onclick="deleteEvidence(${index})" class="bg-red-900/20 hover:bg-red-900/40 border border-red-900 text-red-500 px-2 py-1 rounded-sm font-black uppercase text-[9px] transition-all whitespace-nowrap">
+                        Borrar
+                    </button>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
+
         window.deleteReview = async function(index) {
             if(confirm(`¿Estás seguro de eliminar la reseña de "${userReviews[index].author}"?`)) {
                 userReviews.splice(index, 1);
                 await saveDataToCloud();
                 renderReviews();
                 renderAdminReviewsList();
+            }
+        }
+
+        window.deleteEvidence = async function(index) {
+            if(confirm(`¿Estás seguro de borrar este ganador / evidencia "${deliveryEvidences[index].title}"?`)) {
+                deliveryEvidences.splice(index, 1);
+                await saveDataToCloud();
+                renderEvidences();
+                renderAdminEvidencesList();
             }
         }
 
@@ -972,6 +1087,7 @@
                 document.getElementById('admin-dashboard-view').classList.remove('hidden');
                 renderAdminApartadosList();
                 renderAdminReviewsList();
+                renderAdminEvidencesList();
                 drawAdminWheel(0, Array.from({length: 100}, (_, i) => i));
             } else {
                 alert('ACCESO DENEGADO');
@@ -1047,19 +1163,39 @@
         }
 
         window.resetTicketsGrid = async function() {
-            if (confirm('¿ADVERTENCIA: Purgar todos los registros de la nube y reiniciar base de datos?')) {
+            if (confirm('¿ADVERTENCIA: Purgar todos los registros de la nube, reiniciar boletos y limpiar ganador actual?')) {
                 ticketsState = Array(totalTickets).fill('libre');
                 clientDataStore = {};
                 localGameState = "idle";
-                await saveDataToCloud();
+                
+                await setDoc(doc(db, "rifas", "Principal"), {
+                    tickets: ticketsState,
+                    clients: clientDataStore,
+                    price: ticketPrice,
+                    time: drawTime,
+                    gameState: "idle",
+                    lastWinner: null,
+                    evidences: deliveryEvidences,
+                    reviews: userReviews,
+                    rouletteLocked: rouletteLocked
+                }, { merge: true });
+
                 selectedTickets = [];
                 renderTickets();
-                alert('Sistema purgado correctamente.');
+                document.getElementById('winner-announcement').classList.add('hidden');
+                const adminAnnounce = document.getElementById('admin-winner-announcement');
+                if(adminAnnounce) adminAnnounce.classList.add('hidden');
+                alert('Sistema purgado y ganador reseteado correctamente.');
             }
         }
 
-        // --- DISPARADOR ADMIN: GENERA GANADOR Y MUESTRA WHATSAPP ---
+        // --- DISPARADOR ADMIN (RESPETA CANDADO) ---
         window.triggerRouletteFromAdmin = async function() {
+            if (rouletteLocked) {
+                alert('⚠️ CANDADO ACTIVADO: La ruleta está bloqueada por seguridad para evitar giros accidentales. Desactiva el candado en el panel para girar.');
+                return;
+            }
+
             let activeParticipants = [];
             for (let i = 0; i < totalTickets; i++) {
                 if (ticketsState[i] === 'vendido') {
@@ -1079,7 +1215,8 @@
             await updateDoc(doc(db, "rifas", "Principal"), { 
                 gameState: "spinning",
                 winningIndex: winningTicket,
-                spinId: uniqueSpinId
+                spinId: uniqueSpinId,
+                lastWinner: winningTicket
             });
         }
 
